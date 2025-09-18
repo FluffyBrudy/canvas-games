@@ -1,14 +1,17 @@
-import { CanvasInterface } from "./interface";
+import "./style.css";
+import { Game } from "./game";
 
 function main() {
-  const canvasInterface = new CanvasInterface();
+  const game = new Game();
 
   window.addEventListener("resize", () => {
-    canvasInterface.onResize();
+    game.onResize();
   });
 
   const animate = () => {
-    canvasInterface.clearScreen();
+    game.clearScreen();
+    game.update();
+    game.draw();
     requestAnimationFrame(animate);
   };
 
