@@ -10,11 +10,7 @@ export class Game {
     this.canvas = document.querySelector("canvas")!;
     this.ctx = this.canvas.getContext("2d")!;
     this.init();
-    this.background = new Background(
-      0,
-      this.canvas.height / 2,
-      this.canvas.width
-    );
+    this.background = new Background(0, this.canvas.height / 2);
   }
 
   public init() {

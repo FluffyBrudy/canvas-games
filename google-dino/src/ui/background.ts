@@ -6,7 +6,7 @@ export class Background {
   private y: number;
   private scroll: number;
 
-  constructor(x: number, y: number, w?: number, h?: number) {
+  constructor(x: number, y: number) {
     this.image = new Image();
     this.image.src = bgImage;
     this.x = x;
