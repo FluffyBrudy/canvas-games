@@ -1,4 +1,4 @@
-import bgImage from "../assets/graphics/bg.png";
+import bgImage from "../assets/graphics/environment/bg.png";
 
 export class Background {
   private image: HTMLImageElement;
@@ -52,6 +52,10 @@ export class Background {
         imHeight
       );
     }
+  }
+
+  getHeight() {
+    return this.image.height;
   }
 
   update() {
