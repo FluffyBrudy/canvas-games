@@ -45,9 +45,9 @@ export class Game {
     });
   }
 
-  public update() {
-    this.background.update();
-    this.dino.update();
+  public update(delta: number) {
+    this.background.update(delta);
+    this.dino.update(delta);
   }
 
   public draw() {

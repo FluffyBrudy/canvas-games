@@ -13,6 +13,7 @@ export class Dinasour {
   private frameIndex: number;
   private animationSpeed: number;
   private jumpProgress: number;
+  private jumpStep: number;
   private isJumping: boolean;
   private x: number = 0;
   private y: number = 0;
@@ -25,6 +26,7 @@ export class Dinasour {
     this.animationStates = loadStates();
 
     this.jumpProgress = 0;
+    this.jumpStep = 80;
     this.isJumping = false;
   }
 
@@ -54,16 +56,16 @@ export class Dinasour {
     );
   }
 
-  update() {
+  update(delta: number) {
     this.frameIndex += this.animationSpeed;
     if (this.frameIndex >= this.animationStates[this.state].length) {
       this.frameIndex = 0;
     }
 
     if (this.isJumping) {
-      this.jumpProgress += 0.03;
+      this.jumpProgress += 1.85 * delta;
       const curve = -4 * (this.jumpProgress - 0.5) ** 2 + 1;
-      this.y = this.groundY - curve * 80;
+      this.y = this.groundY - curve * this.jumpStep;
       if (this.jumpProgress >= 1) {
         this.jumpProgress = 0;
         this.isJumping = false;

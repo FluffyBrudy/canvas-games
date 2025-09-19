@@ -5,18 +5,22 @@ function main() {
   const game = new Game();
   game.handleEvent();
 
+  let lastTime = 0;
+
   window.addEventListener("resize", () => {
     game.onResize();
   });
 
-  const animate = () => {
+  const animate = (time: number) => {
+    const delta = (time - lastTime) / 1000;
+    lastTime = time;
     game.clearScreen();
-    game.update();
+    game.update(delta);
     game.draw();
     requestAnimationFrame(animate);
   };
 
-  animate();
+  animate(lastTime);
 }
 
 main();

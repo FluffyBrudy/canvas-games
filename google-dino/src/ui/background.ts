@@ -5,6 +5,7 @@ export class Background {
   private x: number;
   private y: number;
   private scroll: number;
+  private speed: number;
 
   constructor(x: number, y: number) {
     this.image = new Image();
@@ -12,6 +13,7 @@ export class Background {
     this.x = x;
     this.y = y;
     this.scroll = 0;
+    this.speed = 120;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -58,8 +60,8 @@ export class Background {
     return this.image.height;
   }
 
-  update() {
-    this.scroll += 2;
+  update(delta: number) {
+    this.scroll += this.speed * delta;
     if (this.scroll > this.image.width) this.scroll = 0;
   }
 }
