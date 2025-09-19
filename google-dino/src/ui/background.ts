@@ -1,4 +1,5 @@
 import bgImage from "../assets/graphics/environment/bg.png";
+import { DEFAULT_WORLD_SHIFT } from "../constants";
 
 export class Background {
   private image: HTMLImageElement;
@@ -13,7 +14,7 @@ export class Background {
     this.x = x;
     this.y = y;
     this.scroll = 0;
-    this.speed = 120;
+    this.speed = DEFAULT_WORLD_SHIFT;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -60,8 +61,8 @@ export class Background {
     return this.image.height;
   }
 
-  update(delta: number) {
-    this.scroll += this.speed * delta;
+  update(delta: number, shiftSpeed = 1) {
+    this.scroll += this.speed * shiftSpeed * delta;
     if (this.scroll > this.image.width) this.scroll = 0;
   }
 }

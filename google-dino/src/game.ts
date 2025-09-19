@@ -1,12 +1,16 @@
 import { BG_COLOR, MAX_SCREEN_HEIGHT, MAX_SCREEN_WIDTH } from "./constants";
+import { Cloud } from "./sprites/cloud";
 import { Dinasour } from "./sprites/dinasour";
 import { Background } from "./ui/background";
+import { randint } from "./utils/math.utils";
 
 export class Game {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private background: Background;
   private dino: Dinasour;
+  private clouds: Set<Cloud>;
+  private additionalShift = 1;
 
   constructor() {
     this.canvas = document.querySelector("canvas")!;
@@ -15,9 +19,21 @@ export class Game {
     this.background = new Background(0, this.canvas.height / 2);
     this.dino = new Dinasour();
     this.dino.initPos(
-      20,
+      40,
       this.canvas.height / 2 + this.background.getHeight() / 2 + 5
     );
+    this.clouds = new Set();
+  }
+
+  private manageCloud() {
+    if (this.clouds.size === 0) {
+      this.clouds.add(
+        new Cloud(
+          this.canvas.width * 1.5,
+          this.canvas.height / 4 + randint(-50, 0)
+        )
+      );
+    }
   }
 
   public init() {
@@ -46,12 +62,24 @@ export class Game {
   }
 
   public update(delta: number) {
-    this.background.update(delta);
+    this.manageCloud();
+    this.background.update(delta, this.additionalShift);
     this.dino.update(delta);
+    for (let cloud of this.clouds) {
+      cloud.update(delta, this.additionalShift);
+      if (cloud.isBeyondLeftEdge()) {
+        this.clouds.delete(cloud);
+      }
+    }
   }
 
   public draw() {
     this.background.draw(this.ctx);
+    for (let cloud of this.clouds) {
+      if (cloud.isInView(this.canvas.width)) {
+        cloud.draw(this.ctx);
+      }
+    }
     this.dino.draw(this.ctx);
   }
 
