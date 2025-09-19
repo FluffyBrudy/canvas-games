@@ -64,7 +64,7 @@ export class Dinasour {
 
     if (this.isJumping) {
       this.jumpProgress += 1.85 * delta;
-      const curve = -4 * (this.jumpProgress - 0.5) ** 2 + 1;
+      const curve = Math.sin(Math.PI * this.jumpProgress);
       this.y = this.groundY - curve * this.jumpStep;
       if (this.jumpProgress >= 1) {
         this.jumpProgress = 0;
