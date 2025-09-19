@@ -33,12 +33,15 @@ export class Game {
   }
 
   public handleEvent() {
-    window.addEventListener("keyup", (k) => {
+    window.addEventListener("keydown", (k) => {
       if (k.key === "ArrowUp") {
         this.dino.changeState("UP");
       } else if (k.key === "ArrowDown") {
         this.dino.changeState("DOWN");
       }
+    });
+    window.addEventListener("keyup", (k) => {
+      if (k.key === "ArrowDown") this.dino.changeState("RESET");
     });
   }
 

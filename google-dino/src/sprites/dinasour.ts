@@ -12,20 +12,31 @@ export class Dinasour {
   private readonly animationStates: ReturnType<typeof loadStates>;
   private frameIndex: number;
   private animationSpeed: number;
+  private jumpProgress: number;
+  private isJumping: boolean;
   private x: number = 0;
   private y: number = 0;
-  private gravity = 1;
+  private groundY: number = 0;
 
   constructor() {
     this.frameIndex = 0;
     this.animationSpeed = 0.1;
     this.state = "run";
     this.animationStates = loadStates();
+
+    this.jumpProgress = 0;
+    this.isJumping = false;
   }
 
   initPos(x: number, y: number) {
     this.x = x;
     this.y = ~~y - DINO_SIZE;
+    this.groundY = this.y;
+  }
+
+  jump() {
+    this.isJumping = true;
+    this.jumpProgress = 0;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -37,7 +48,7 @@ export class Dinasour {
     ctx.drawImage(
       currentFrame,
       this.x,
-      this.y + alterFactor + this.gravity,
+      this.y + alterFactor,
       DINO_SIZE + alterFactor,
       DINO_SIZE - alterFactor
     );
@@ -48,7 +59,18 @@ export class Dinasour {
     if (this.frameIndex >= this.animationStates[this.state].length) {
       this.frameIndex = 0;
     }
-    this.gravity *= 1.01;
+
+    if (this.isJumping) {
+      this.jumpProgress += 0.03;
+      const curve = -4 * (this.jumpProgress - 0.5) ** 2 + 1;
+      this.y = this.groundY - curve * 80;
+      if (this.jumpProgress >= 1) {
+        this.jumpProgress = 0;
+        this.isJumping = false;
+        this.y = this.groundY;
+        this.state = "run";
+      }
+    }
   }
 
   getCurrentFrameSize() {
@@ -57,10 +79,14 @@ export class Dinasour {
   }
 
   changeState(keyType: TKeyType) {
+    if (this.isJumping) return;
     if (keyType === "UP") {
       this.state = "jump";
+      this.isJumping = true;
     } else if (keyType === "DOWN") {
       this.state = "duck";
+    } else if (keyType === "RESET") {
+      this.state = "run";
     }
   }
 }

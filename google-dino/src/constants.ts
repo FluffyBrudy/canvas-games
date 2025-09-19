@@ -11,4 +11,4 @@ export const DinoState = {
   DEAD: "dead",
 } as const;
 export type TDinoState = (typeof DinoState)[keyof typeof DinoState];
-export type TKeyType = "UP" | "DOWN";
+export type TKeyType = "UP" | "DOWN" | "RESET";
