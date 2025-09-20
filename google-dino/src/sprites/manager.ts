@@ -100,7 +100,6 @@ export class BirdManager extends SpriteManager<Bird> {
     spacing?: { max: number; min: number }
   ) {
     super(stateFrames, spacing);
-    this.entityFrames = Object.freeze(stateFrames);
   }
 
   spwan() {}
@@ -116,7 +115,6 @@ export class CactusManager extends SpriteManager<Cactus> {
     spacing?: { max: number; min: number }
   ) {
     super(stateFrames, spacing);
-    this.entityFrames = Object.freeze(stateFrames);
   }
 
   spwan() {}
