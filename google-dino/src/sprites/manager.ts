@@ -81,7 +81,6 @@ export class cloudManager extends SpriteManager<Cloud> {
   }
 
   public update(delta: number, shift: number): void {
-    console.log(this.size());
     this.spwan();
     super.update(delta, shift);
   }

@@ -15,6 +15,7 @@ export class Dinasour {
   private animationSpeed: number;
   private jumpProgress: number;
   private jumpStep: number;
+  private isDuckQueue: boolean;
   private isJumping: boolean;
   private x: number = 0;
   private y: number = 0;
@@ -29,6 +30,7 @@ export class Dinasour {
     this.jumpProgress = 0;
     this.jumpStep = 80;
     this.isJumping = false;
+    this.isDuckQueue = false;
   }
 
   initPos(x: number, y: number) {
@@ -71,7 +73,12 @@ export class Dinasour {
         this.jumpProgress = 0;
         this.isJumping = false;
         this.y = this.groundY;
-        this.state = "run";
+        if (this.isDuckQueue) {
+          this.state = "duck";
+          this.isDuckQueue = false;
+        } else {
+          this.state = "run";
+        }
       }
     }
   }
@@ -82,12 +89,15 @@ export class Dinasour {
   }
 
   changeState(keyType: TKeyType) {
-    if (this.isJumping) return;
     if (keyType === "UP") {
       this.state = "jump";
       this.isJumping = true;
     } else if (keyType === "DOWN") {
-      this.state = "duck";
+      if (!this.isJumping) {
+        this.state = "duck";
+      } else {
+        this.isDuckQueue = true;
+      }
     } else if (keyType === "RESET") {
       this.state = "run";
     }
