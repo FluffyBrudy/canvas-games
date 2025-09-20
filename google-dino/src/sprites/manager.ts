@@ -1,6 +1,7 @@
 import { randint } from "../utils/math.utils";
 import { Cloud } from "./cloud";
 import type { Bird } from "./obstacles/bird";
+import type { Cactus } from "./obstacles/cactus";
 
 interface DepAttrs {
   viewWidth: number;
@@ -30,13 +31,13 @@ export abstract class SpriteManager<
     if (!SpriteManager.depAttrs)
       throw new Error("must initialize dependency attributes");
 
-    this.entityFrames = entityFrames;
+    this.entityFrames = Object.freeze(entityFrames);
     this.sprites = new Set();
 
     this.nextSpawnDelay = 0;
     this.prviousSpawnTime = Date.now();
     this.minSpace = spacing?.min || this.entityFrames[0].width;
-    this.maxSpace = spacing?.max || this.entityFrames[0].width * 2;
+    this.maxSpace = spacing?.max || this.entityFrames[0].width * 3;
   }
 
   abstract spwan(): void;
@@ -78,7 +79,7 @@ export class cloudManager extends SpriteManager<Cloud> {
 
   spwan() {
     const timeDiff = Date.now() - this.prviousSpawnTime;
-    if (timeDiff >= this.nextSpawnDelay && this.size() < 6) {
+    if (timeDiff >= this.nextSpawnDelay && this.size() < 4) {
       const { viewHeight, viewWidth } = cloudManager.depAttrs;
       const x = viewWidth + randint(this.minSpace, this.maxSpace);
       const y = viewHeight / 4 + randint(-50, 50);
@@ -94,6 +95,22 @@ export class cloudManager extends SpriteManager<Cloud> {
 }
 
 export class BirdManager extends SpriteManager<Bird> {
+  constructor(
+    stateFrames: HTMLImageElement[],
+    spacing?: { max: number; min: number }
+  ) {
+    super(stateFrames, spacing);
+    this.entityFrames = Object.freeze(stateFrames);
+  }
+
+  spwan() {}
+
+  public update(delta: number, shift: number): void {
+    super.update(delta, shift);
+  }
+}
+
+export class CactusManager extends SpriteManager<Cactus> {
   constructor(
     stateFrames: HTMLImageElement[],
     spacing?: { max: number; min: number }
