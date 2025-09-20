@@ -1,16 +1,13 @@
-import dead1 from "../assets/graphics/dino/dead/dead.png";
-import dead2 from "../assets/graphics/dino/dead/crash.png";
-import idel from "../assets/graphics/dino/idle/idle.png";
-import duck1 from "../assets/graphics/dino/duck/duck1.png";
-import duck2 from "../assets/graphics/dino/duck/duck2.png";
-import firstMovement from "../assets/graphics/dino/movement/first.png";
-import secondMovement from "../assets/graphics/dino/movement/second.png";
-import { DINO_SIZE, type TDinoState, type TKeyType } from "../constants";
-import { loadImages } from "../utils/image.utils";
+import {
+  DINO_SIZE,
+  type TAssets,
+  type TDinoState,
+  type TKeyType,
+} from "../constants";
 
 export class Dinasour {
   private state: TDinoState;
-  private readonly animationStates: ReturnType<typeof loadStates>;
+  private animationStates: TAssets["dino"];
   private frameIndex: number;
   private animationSpeed: number;
   private jumpProgress: number;
@@ -21,11 +18,11 @@ export class Dinasour {
   private y: number = 0;
   private groundY: number = 0;
 
-  constructor() {
+  constructor(stateAnimations: TAssets["dino"]) {
     this.frameIndex = 0;
     this.animationSpeed = 12;
     this.state = "run";
-    this.animationStates = loadStates();
+    this.animationStates = stateAnimations;
 
     this.jumpProgress = 0;
     this.jumpStep = 80;
@@ -102,13 +99,4 @@ export class Dinasour {
       this.state = "run";
     }
   }
-}
-
-function loadStates() {
-  const idle = loadImages([idel]);
-  const jump = idle;
-  const run = loadImages([firstMovement, secondMovement]);
-  const duck = loadImages([duck1, duck2]);
-  const dead = loadImages([dead1, dead2]);
-  return Object.freeze({ idle, jump, run, duck, dead });
 }

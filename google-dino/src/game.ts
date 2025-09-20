@@ -1,8 +1,11 @@
-import { BG_COLOR, MAX_SCREEN_HEIGHT, MAX_SCREEN_WIDTH } from "./constants";
-import { Cloud } from "./sprites/cloud";
+import {
+  BG_COLOR,
+  MAX_SCREEN_HEIGHT,
+  MAX_SCREEN_WIDTH,
+  type TAssets,
+} from "./constants";
 import { Dinasour } from "./sprites/dinasour";
-import { cloudManager, SpriteManager } from "./sprites/manager";
-import { Bird } from "./sprites/obstacles/bird";
+import { BirdManager, cloudManager, SpriteManager } from "./sprites/manager";
 import { Background } from "./ui/background";
 
 export class Game {
@@ -10,16 +13,20 @@ export class Game {
   private ctx: CanvasRenderingContext2D;
   private background: Background;
   private dino: Dinasour;
-  private cloudManager: SpriteManager<Cloud>;
-  private birdManager: SpriteManager<Bird>;
+  private cloudManager: cloudManager;
+  private birdManager: BirdManager;
   private additionalShift = 1;
 
-  constructor() {
+  constructor(assets: TAssets) {
     this.canvas = document.querySelector("canvas")!;
     this.ctx = this.canvas.getContext("2d")!;
     this.init();
-    this.background = new Background(0, this.canvas.height / 2);
-    this.dino = new Dinasour();
+    this.background = new Background(
+      0,
+      this.canvas.height / 2,
+      assets.environment.bg
+    );
+    this.dino = new Dinasour(assets.dino);
     this.dino.initPos(
       40,
       this.canvas.height / 2 + this.background.getHeight() / 2 + 5
@@ -28,8 +35,8 @@ export class Game {
       viewWidth: this.canvas.width,
       viewHeight: this.canvas.height,
     });
-    this.cloudManager = new cloudManager();
-    this.birdManager = new SpriteManager();
+    this.cloudManager = new cloudManager(assets.environment.cloud);
+    this.birdManager = new BirdManager(assets.bird.flap);
   }
 
   public init() {

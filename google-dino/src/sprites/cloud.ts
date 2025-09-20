@@ -9,13 +9,13 @@ export class Cloud {
   private speed: number;
   private readonly size: { w: number; h: number };
 
-  constructor(x: number, y: number) {
-    this.image = new Image();
+  constructor(x: number, y: number, image: HTMLImageElement) {
+    this.image = image;
     this.image.src = cloudImage;
     this.x = x;
     this.y = y;
-    this.speed = DEFAULT_WORLD_SHIFT * 0.5;
-    const scaleFactor = randfloat(0.6, 0.8);
+    this.speed = DEFAULT_WORLD_SHIFT * 0.4;
+    const scaleFactor = randfloat(0.5, 0.7);
     this.size = Object.freeze({
       w: scaleFactor * this.image.width,
       h: scaleFactor * this.image.height,

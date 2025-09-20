@@ -1,8 +1,12 @@
 import "./style.css";
 import { Game } from "./game";
+import { loadAllAssets } from "./utils/image.utils";
+import { ASSETS } from "./constants";
 
-function main() {
-  const game = new Game();
+async function main() {
+  const assets = await loadAllAssets(ASSETS);
+  console.log(assets);
+  const game = new Game(assets);
   game.handleEvent();
 
   let lastTime = 0;

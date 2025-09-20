@@ -1,4 +1,3 @@
-import bgImage from "../assets/graphics/environment/bg.png";
 import { DEFAULT_WORLD_SHIFT } from "../constants";
 
 export class Background {
@@ -8,9 +7,9 @@ export class Background {
   private scroll: number;
   private speed: number;
 
-  constructor(x: number, y: number) {
-    this.image = new Image();
-    this.image.src = bgImage;
+  constructor(x: number, y: number, image: HTMLImageElement) {
+    this.image = image;
+    console.log(this.image.width);
     this.x = x;
     this.y = y;
     this.scroll = 0;
