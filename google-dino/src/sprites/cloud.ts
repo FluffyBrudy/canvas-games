@@ -14,7 +14,7 @@ export class Cloud {
     this.image.src = cloudImage;
     this.x = x;
     this.y = y;
-    this.speed = DEFAULT_WORLD_SHIFT;
+    this.speed = DEFAULT_WORLD_SHIFT * 0.5;
     const scaleFactor = randfloat(0.6, 0.8);
     this.size = Object.freeze({
       w: scaleFactor * this.image.width,

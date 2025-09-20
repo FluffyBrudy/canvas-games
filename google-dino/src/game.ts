@@ -1,15 +1,17 @@
 import { BG_COLOR, MAX_SCREEN_HEIGHT, MAX_SCREEN_WIDTH } from "./constants";
 import { Cloud } from "./sprites/cloud";
 import { Dinasour } from "./sprites/dinasour";
+import { cloudManager, SpriteManager } from "./sprites/manager";
+import { Bird } from "./sprites/obstacles/bird";
 import { Background } from "./ui/background";
-import { randint } from "./utils/math.utils";
 
 export class Game {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private background: Background;
   private dino: Dinasour;
-  private clouds: Set<Cloud>;
+  private cloudManager: SpriteManager<Cloud>;
+  private birdManager: SpriteManager<Bird>;
   private additionalShift = 1;
 
   constructor() {
@@ -22,18 +24,12 @@ export class Game {
       40,
       this.canvas.height / 2 + this.background.getHeight() / 2 + 5
     );
-    this.clouds = new Set();
-  }
-
-  private manageCloud() {
-    if (this.clouds.size === 0) {
-      this.clouds.add(
-        new Cloud(
-          this.canvas.width * 1.5,
-          this.canvas.height / 4 + randint(-50, 0)
-        )
-      );
-    }
+    SpriteManager.initAttrs({
+      viewWidth: this.canvas.width,
+      viewHeight: this.canvas.height,
+    });
+    this.cloudManager = new cloudManager();
+    this.birdManager = new SpriteManager();
   }
 
   public init() {
@@ -62,24 +58,16 @@ export class Game {
   }
 
   public update(delta: number) {
-    this.manageCloud();
     this.background.update(delta, this.additionalShift);
+    this.cloudManager.update(delta, this.additionalShift);
+    this.birdManager.update(delta, this.additionalShift);
     this.dino.update(delta);
-    for (let cloud of this.clouds) {
-      cloud.update(delta, this.additionalShift);
-      if (cloud.isBeyondLeftEdge()) {
-        this.clouds.delete(cloud);
-      }
-    }
   }
 
   public draw() {
     this.background.draw(this.ctx);
-    for (let cloud of this.clouds) {
-      if (cloud.isInView(this.canvas.width)) {
-        cloud.draw(this.ctx);
-      }
-    }
+    this.cloudManager.draw(this.ctx, this.canvas.width);
+    this.birdManager.draw(this.ctx, this.canvas.width);
     this.dino.draw(this.ctx);
   }
 

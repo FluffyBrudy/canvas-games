@@ -6,6 +6,7 @@ import duck2 from "../assets/graphics/dino/duck/duck2.png";
 import firstMovement from "../assets/graphics/dino/movement/first.png";
 import secondMovement from "../assets/graphics/dino/movement/second.png";
 import { DINO_SIZE, type TDinoState, type TKeyType } from "../constants";
+import { loadImages } from "../utils/image.utils";
 
 export class Dinasour {
   private state: TDinoState;
@@ -21,7 +22,7 @@ export class Dinasour {
 
   constructor() {
     this.frameIndex = 0;
-    this.animationSpeed = 0.1;
+    this.animationSpeed = 12;
     this.state = "run";
     this.animationStates = loadStates();
 
@@ -57,7 +58,7 @@ export class Dinasour {
   }
 
   update(delta: number) {
-    this.frameIndex += this.animationSpeed;
+    this.frameIndex += this.animationSpeed * delta;
     if (this.frameIndex >= this.animationStates[this.state].length) {
       this.frameIndex = 0;
     }
@@ -94,19 +95,10 @@ export class Dinasour {
 }
 
 function loadStates() {
-  const idle = loadAssets([idel]);
+  const idle = loadImages([idel]);
   const jump = idle;
-  const run = loadAssets([firstMovement, secondMovement]);
-  const duck = loadAssets([duck1, duck2]);
-  const dead = loadAssets([dead1, dead2]);
+  const run = loadImages([firstMovement, secondMovement]);
+  const duck = loadImages([duck1, duck2]);
+  const dead = loadImages([dead1, dead2]);
   return Object.freeze({ idle, jump, run, duck, dead });
-}
-
-function loadAssets(paths: string[]) {
-  const frames = paths.map((frame) => {
-    const img = new Image();
-    img.src = frame;
-    return img;
-  });
-  return frames;
 }
