@@ -31,7 +31,7 @@ export class Dinasour {
     this.animationStates = stateAnimations;
 
     this.jumpProgress = 0;
-    this.jumpStep = 80;
+    this.jumpStep = 100;
     this.isJumping = false;
     this.isDuckQueue = false;
 

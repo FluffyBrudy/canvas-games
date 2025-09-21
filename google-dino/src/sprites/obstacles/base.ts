@@ -1,5 +1,3 @@
-import { DEFAULT_WORLD_SHIFT } from "../../constants";
-
 export interface Size {
   w: number;
   h: number;
@@ -8,13 +6,11 @@ export interface Size {
 export abstract class BaseObstacle {
   protected x: number;
   protected y: number;
-  protected speed: number;
   protected size: Size;
 
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
-    this.speed = DEFAULT_WORLD_SHIFT;
     this.size = { w: 0, h: 0 };
   }
 

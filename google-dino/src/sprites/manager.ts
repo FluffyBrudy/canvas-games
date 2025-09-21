@@ -1,7 +1,5 @@
 import { randint } from "../utils/math.utils";
 import { Cloud } from "./cloud";
-import type { Bird } from "./obstacles/bird";
-import type { Cactus } from "./obstacles/cactus";
 
 interface DepAttrs {
   viewWidth: number;
@@ -59,9 +57,9 @@ export abstract class SpriteManager<
     }
   }
 
-  public draw(ctx: CanvasRenderingContext2D, canvasWidth: number) {
+  public draw(ctx: CanvasRenderingContext2D) {
     for (let sprite of this.sprites) {
-      if (sprite.isInView(canvasWidth)) {
+      if (sprite.isInView(SpriteManager.depAttrs.viewWidth)) {
         sprite.draw(ctx);
       }
     }
@@ -88,36 +86,6 @@ export class cloudManager extends SpriteManager<Cloud> {
       this.prviousSpawnTime = Date.now();
     }
   }
-
-  public update(delta: number, shift: number): void {
-    super.update(delta, shift);
-  }
-}
-
-export class BirdManager extends SpriteManager<Bird> {
-  constructor(
-    stateFrames: HTMLImageElement[],
-    spacing?: { max: number; min: number }
-  ) {
-    super(stateFrames, spacing);
-  }
-
-  spwan() {}
-
-  public update(delta: number, shift: number): void {
-    super.update(delta, shift);
-  }
-}
-
-export class CactusManager extends SpriteManager<Cactus> {
-  constructor(
-    stateFrames: HTMLImageElement[],
-    spacing?: { max: number; min: number }
-  ) {
-    super(stateFrames, spacing);
-  }
-
-  spwan() {}
 
   public update(delta: number, shift: number): void {
     super.update(delta, shift);
