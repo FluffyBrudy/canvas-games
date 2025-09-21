@@ -42,10 +42,23 @@ export class Game {
       w: this.canvas.width,
       h: this.canvas.height,
     });
-    this.birdManager = new BirdManager(assets.bird.flap, {
-      w: this.canvas.width,
-      h: this.canvas.height,
-    });
+    const yConstrainBase =
+      this.canvas.height / 2 +
+      this.background.getHeight() / 2 -
+      assets.bird.flap[0].height * 0.5;
+    const yConstraints = [
+      yConstrainBase - assets.bird.flap[0].height * 3,
+      yConstrainBase - assets.bird.flap[0].height * 1.8,
+      yConstrainBase,
+    ];
+    this.birdManager = new BirdManager(
+      assets.bird.flap,
+      {
+        w: this.canvas.width,
+        h: this.canvas.height,
+      },
+      yConstraints
+    );
   }
 
   public init() {
@@ -77,7 +90,11 @@ export class Game {
     this.background.update(delta, this.dino.speed);
     this.cloudManager.update(delta, this.dino.speed);
     this.cactusManager.update(delta, this.dino.speed);
-    this.birdManager.update(delta, this.dino.speed);
+    this.birdManager.update(
+      delta,
+      this.dino.speed,
+      this.cactusManager.getSprites()
+    );
     this.dino.update(delta);
   }
 

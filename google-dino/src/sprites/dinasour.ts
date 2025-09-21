@@ -130,6 +130,7 @@ export class Dinasour {
       }
     } else if (keyType === "RESET") {
       this.state = "run";
+      this.isDuckQueue = false;
     }
   }
 }
