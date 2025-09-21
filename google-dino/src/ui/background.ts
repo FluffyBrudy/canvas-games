@@ -1,11 +1,8 @@
-import { DEFAULT_WORLD_SHIFT } from "../constants";
-
 export class Background {
   private image: HTMLImageElement;
   private x: number;
   private y: number;
   private scroll: number;
-  private speed: number;
 
   constructor(x: number, y: number, image: HTMLImageElement) {
     this.image = image;
@@ -13,7 +10,6 @@ export class Background {
     this.x = x;
     this.y = y;
     this.scroll = 0;
-    this.speed = DEFAULT_WORLD_SHIFT;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -60,8 +56,8 @@ export class Background {
     return this.image.height;
   }
 
-  update(delta: number, shiftSpeed = 1) {
-    this.scroll += this.speed * shiftSpeed * delta;
+  update(delta: number, playerSpeed: number) {
+    this.scroll += playerSpeed * delta;
     if (this.scroll > this.image.width) this.scroll = 0;
   }
 }

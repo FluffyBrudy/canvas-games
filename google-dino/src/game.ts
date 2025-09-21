@@ -5,7 +5,7 @@ import {
   type TAssets,
 } from "./constants";
 import { Dinasour } from "./sprites/dinasour";
-import { BirdManager, cloudManager, SpriteManager } from "./sprites/manager";
+import { cloudManager, SpriteManager } from "./sprites/manager";
 import { Background } from "./ui/background";
 
 export class Game {
@@ -14,8 +14,6 @@ export class Game {
   private background: Background;
   private dino: Dinasour;
   private cloudManager: cloudManager;
-  private birdManager: BirdManager;
-  private additionalShift = 1;
 
   constructor(assets: TAssets) {
     this.canvas = document.querySelector("canvas")!;
@@ -36,7 +34,6 @@ export class Game {
       viewHeight: this.canvas.height,
     });
     this.cloudManager = new cloudManager(assets.environment.cloud);
-    this.birdManager = new BirdManager(assets.bird.flap);
   }
 
   public init() {
@@ -65,16 +62,14 @@ export class Game {
   }
 
   public update(delta: number) {
-    this.background.update(delta, this.additionalShift);
-    this.cloudManager.update(delta, this.additionalShift);
-    this.birdManager.update(delta, this.additionalShift);
+    this.background.update(delta, this.dino.speed);
+    this.cloudManager.update(delta, this.dino.speed);
     this.dino.update(delta);
   }
 
   public draw() {
     this.background.draw(this.ctx);
     this.cloudManager.draw(this.ctx, this.canvas.width);
-    this.birdManager.draw(this.ctx, this.canvas.width);
     this.dino.draw(this.ctx);
   }
 

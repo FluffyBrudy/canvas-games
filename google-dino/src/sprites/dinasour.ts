@@ -1,4 +1,5 @@
 import {
+  DEFAULT_WORLD_SHIFT,
   DINO_SIZE,
   type TAssets,
   type TDinoState,
@@ -17,6 +18,11 @@ export class Dinasour {
   private x: number = 0;
   private y: number = 0;
   private groundY: number = 0;
+  private traveledDistance: number;
+  private nextSpeedIncDist = 100;
+  private prevSpeedIncDist = 100;
+  private speedIncrement = 0.5;
+  private currentSpeed = DEFAULT_WORLD_SHIFT;
 
   constructor(stateAnimations: TAssets["dino"]) {
     this.frameIndex = 0;
@@ -28,6 +34,16 @@ export class Dinasour {
     this.jumpStep = 80;
     this.isJumping = false;
     this.isDuckQueue = false;
+
+    this.traveledDistance = 0;
+  }
+
+  public get distance(): number {
+    return this.traveledDistance;
+  }
+
+  public get speed(): number {
+    return this.currentSpeed;
   }
 
   initPos(x: number, y: number) {
@@ -56,12 +72,14 @@ export class Dinasour {
     );
   }
 
-  update(delta: number) {
+  private animate(delta: number) {
     this.frameIndex += this.animationSpeed * delta;
     if (this.frameIndex >= this.animationStates[this.state].length) {
       this.frameIndex = 0;
     }
+  }
 
+  manageJump(delta: number) {
     if (this.isJumping) {
       this.jumpProgress += 1.85 * delta;
       const curve = Math.sin(Math.PI * this.jumpProgress);
@@ -78,6 +96,17 @@ export class Dinasour {
         }
       }
     }
+  }
+
+  update(delta: number) {
+    this.traveledDistance += delta * this.currentSpeed;
+    if (this.traveledDistance >= this.nextSpeedIncDist) {
+      this.currentSpeed += this.speedIncrement;
+      this.prevSpeedIncDist = this.nextSpeedIncDist;
+      this.nextSpeedIncDist = this.prevSpeedIncDist + this.nextSpeedIncDist;
+    }
+    this.animate(delta);
+    this.manageJump(delta);
   }
 
   getCurrentFrameSize() {
