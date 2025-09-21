@@ -87,42 +87,30 @@ export class BirdManager {
   constructor(
     birdFrames: readonly HTMLImageElement[],
     viewSize: { w: number; h: number },
-    yConstrain: number[]
+    yConstrainBase: number[]
   ) {
     this.viewSize = viewSize;
     this.birdFrames = birdFrames;
-    this.yConstraints = yConstrain;
+    this.yConstraints = yConstrainBase;
   }
-  private trySpawn(
-    playerSpeed: number,
-    delta: number,
-    toRespectSprites: Set<Cactus>
-  ) {
+
+  private trySpawn(playerSpeed: number, delta: number) {
     this.distanceSinceLastBird += playerSpeed * delta;
 
     if (
-      this.distanceSinceLastBird <= this.spawnDistanceThreshold ||
-      Math.random() >= this.spawnProbability ||
-      this.birds.size >= this.maxBirds
-    )
-      return;
-
-    const x = this.viewSize.w + 100;
-    const yIndex = randint(0, this.yConstraints.length - 1);
-    const y = this.yConstraints[yIndex];
-
-    const newBird = new Bird(x, y, this.birdFrames);
-
-    this.birds.add(newBird);
-    this.distanceSinceLastBird = 0;
+      this.distanceSinceLastBird > this.spawnDistanceThreshold &&
+      Math.random() < this.spawnProbability &&
+      this.birds.size < this.maxBirds
+    ) {
+      const x = this.viewSize.w + 50;
+      const y = this.yConstraints[randint(0, this.yConstraints.length - 1)];
+      this.birds.add(new Bird(x, y, this.birdFrames));
+      this.distanceSinceLastBird = 0;
+    }
   }
 
-  public update(
-    delta: number,
-    playerSpeed: number,
-    toRespectSprites: Set<Cactus>
-  ) {
-    this.trySpawn(playerSpeed, delta, toRespectSprites);
+  public update(delta: number, playerSpeed: number) {
+    this.trySpawn(playerSpeed, delta);
 
     for (const bird of this.birds) {
       bird.update(delta, playerSpeed);

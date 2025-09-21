@@ -90,11 +90,7 @@ export class Game {
     this.background.update(delta, this.dino.speed);
     this.cloudManager.update(delta, this.dino.speed);
     this.cactusManager.update(delta, this.dino.speed);
-    this.birdManager.update(
-      delta,
-      this.dino.speed,
-      this.cactusManager.getSprites()
-    );
+    this.birdManager.update(delta, this.dino.speed);
     this.dino.update(delta);
   }
 
