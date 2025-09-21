@@ -7,7 +7,7 @@ export class Cactus extends BaseObstacle {
     super(x, y);
 
     this.image = image;
-    this.size = { w: this.image.width * 0.5, h: this.image.height * 0.5 };
+    this.size = { w: this.image.width * 0.4, h: this.image.height * 0.4 };
 
     this.x = x;
     this.y = y - this.size.h;
