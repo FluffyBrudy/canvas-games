@@ -1,5 +1,6 @@
 import type { TAssets } from "../../constants";
 import { randint } from "../../utils/math.utils";
+import { Bird } from "./bird";
 import { Cactus } from "./cactus";
 
 export class CactusManager {
@@ -25,8 +26,21 @@ export class CactusManager {
     );
   }
 
+  public getSprites() {
+    return this.sprites;
+  }
+
   public spawn() {
     if (this.sprites.size >= this.maxObstacles) return;
+    if (this.sprites.size === 0) {
+      this.sprites.add(
+        new Cactus(
+          this.viewSize.w + 50,
+          this.viewSize.h / 2,
+          this.cactiImages.largeDouble
+        )
+      );
+    }
     const lastCactusX = Array.from(this.sprites)
       .map((cactus) => cactus.getPosition().x)
       .sort((a, b) => b - a)[0];
@@ -55,6 +69,55 @@ export class CactusManager {
       if (cactus.isInView(this.viewSize.w)) {
         cactus.draw(ctx);
       }
+    }
+  }
+}
+
+export class BirdManager {
+  private birds = new Set<Bird>();
+  private birdFrames: readonly HTMLImageElement[];
+  private viewSize: { w: number; h: number };
+
+  private readonly maxBirds = 5;
+  private distanceSinceLastBird = 0;
+  private spawnDistanceThreshold = 300;
+  private spawnProbability = 0.02;
+
+  constructor(
+    birdFrames: readonly HTMLImageElement[],
+    viewSize: { w: number; h: number }
+  ) {
+    this.viewSize = viewSize;
+    this.birdFrames = birdFrames;
+  }
+
+  private trySpawn(playerSpeed: number, delta: number) {
+    this.distanceSinceLastBird += playerSpeed * delta;
+
+    if (
+      this.distanceSinceLastBird > this.spawnDistanceThreshold &&
+      Math.random() < this.spawnProbability &&
+      this.birds.size < this.maxBirds
+    ) {
+      const x = this.viewSize.w + 50;
+      const y = Math.random() * (this.viewSize.h / 2);
+      this.birds.add(new Bird(x, y, this.birdFrames));
+      this.distanceSinceLastBird = 0;
+    }
+  }
+
+  public update(delta: number, playerSpeed: number) {
+    this.trySpawn(playerSpeed, delta);
+
+    for (const bird of this.birds) {
+      bird.update(delta, playerSpeed);
+      if (bird.isBeyondLeftEdge()) this.birds.delete(bird);
+    }
+  }
+
+  public draw(ctx: CanvasRenderingContext2D) {
+    for (const bird of this.birds) {
+      if (bird.isInView(this.viewSize.w)) bird.draw(ctx);
     }
   }
 }

@@ -6,7 +6,7 @@ import {
 } from "./constants";
 import { Dinasour } from "./sprites/dinasour";
 import { cloudManager, SpriteManager } from "./sprites/manager";
-import { CactusManager } from "./sprites/obstacles/manager";
+import { BirdManager, CactusManager } from "./sprites/obstacles/manager";
 import { Background } from "./ui/background";
 
 export class Game {
@@ -16,6 +16,7 @@ export class Game {
   private dino: Dinasour;
   private cloudManager: cloudManager;
   private cactusManager: CactusManager;
+  private birdManager: BirdManager;
 
   constructor(assets: TAssets) {
     this.canvas = document.querySelector("canvas")!;
@@ -38,6 +39,10 @@ export class Game {
 
     this.cloudManager = new cloudManager(assets.environment.cloud);
     this.cactusManager = new CactusManager(assets.cactus, {
+      w: this.canvas.width,
+      h: this.canvas.height,
+    });
+    this.birdManager = new BirdManager(assets.bird.flap, {
       w: this.canvas.width,
       h: this.canvas.height,
     });
@@ -72,6 +77,7 @@ export class Game {
     this.background.update(delta, this.dino.speed);
     this.cloudManager.update(delta, this.dino.speed);
     this.cactusManager.update(delta, this.dino.speed);
+    this.birdManager.update(delta, this.dino.speed);
     this.dino.update(delta);
   }
 
@@ -79,6 +85,7 @@ export class Game {
     this.background.draw(this.ctx);
     this.cloudManager.draw(this.ctx);
     this.cactusManager.draw(this.ctx);
+    this.birdManager.draw(this.ctx);
     this.dino.draw(this.ctx);
   }
 

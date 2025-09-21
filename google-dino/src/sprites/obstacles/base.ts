@@ -18,7 +18,7 @@ export abstract class BaseObstacle {
   abstract update(delta: number, shiftSpeed?: number): void;
 
   isBeyondLeftEdge(): boolean {
-    return this.x < -this.size.w;
+    return this.x + this.size.w < 0;
   }
 
   isInView(rightEdge: number, leftEdge: number = -this.size.w): boolean {

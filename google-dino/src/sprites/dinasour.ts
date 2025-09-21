@@ -46,6 +46,10 @@ export class Dinasour {
     return this.currentSpeed;
   }
 
+  public getPosition() {
+    return { x: this.x, y: this.y };
+  }
+
   initPos(x: number, y: number) {
     this.x = x;
     this.y = ~~y - DINO_SIZE;

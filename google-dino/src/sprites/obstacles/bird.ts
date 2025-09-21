@@ -1,15 +1,17 @@
 import { BaseObstacle } from "./base";
-import { DEFAULT_WORLD_SHIFT } from "../../constants";
 
 export class Bird extends BaseObstacle {
   private frameIndex: number;
   private animationSpeed: number;
   private animationFrames: readonly HTMLImageElement[];
 
-  constructor(x: number, y: number, animationFrames: HTMLImageElement[]) {
+  constructor(
+    x: number,
+    y: number,
+    animationFrames: readonly HTMLImageElement[]
+  ) {
     super(x, y);
     this.frameIndex = 0;
-    this.speed = DEFAULT_WORLD_SHIFT;
     this.animationSpeed = 6;
     this.animationFrames = animationFrames;
     this.size = {
@@ -26,11 +28,10 @@ export class Bird extends BaseObstacle {
       this.size.w,
       this.size.h
     );
-    console.log(this.x);
   }
 
-  update(delta: number, shiftSpeed = 1): void {
-    this.x -= delta * this.speed * shiftSpeed;
+  update(delta: number, playerSpeed: number): void {
+    this.x -= delta * playerSpeed;
 
     this.frameIndex += this.animationSpeed * delta;
     if (this.frameIndex >= this.animationFrames.length) {
