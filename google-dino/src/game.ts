@@ -49,7 +49,7 @@ export class Game {
     const yConstraints = [
       yConstrainBase - assets.bird.flap[0].height * 3,
       yConstrainBase - assets.bird.flap[0].height * 1.8,
-      yConstrainBase,
+      yConstrainBase - assets.bird.flap[0].height * 1.5,
     ];
     this.birdManager = new BirdManager(
       assets.bird.flap,

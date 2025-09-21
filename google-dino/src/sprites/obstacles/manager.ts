@@ -112,48 +112,9 @@ export class BirdManager {
     const y = this.yConstraints[yIndex];
 
     const newBird = new Bird(x, y, this.birdFrames);
-    const birdSize = newBird.getSize();
 
-    let canSpawn = true;
-
-    if (yIndex === 2) {
-      const playerX = 0;
-      const cactusesAhead = Array.from(toRespectSprites)
-        .filter((c) => c.getPosition().x > playerX)
-        .sort((a, b) => a.getPosition().x - b.getPosition().x);
-
-      if (cactusesAhead.length < 2) {
-        canSpawn = false;
-      } else {
-        const c1 = cactusesAhead[0];
-        const c2 = cactusesAhead[1];
-
-        const c1Pos = c1.getPosition();
-        const c2Pos = c2.getPosition();
-        const c1Size = c1.getSize();
-
-        const horizontalGap = c2Pos.x - (c1Pos.x + c1Size.w);
-
-        if (horizontalGap < birdSize.w * 2) canSpawn = false;
-
-        if (Math.abs(y - c1Pos.y) > birdSize.h * 2) canSpawn = false;
-      }
-    } else {
-      for (const cactus of toRespectSprites) {
-        const cPos = cactus.getPosition();
-        const cSize = cactus.getSize();
-        const gap = cSize.w + birdSize.w;
-        if (x < cPos.x + gap && x + birdSize.w > cPos.x) {
-          canSpawn = false;
-          break;
-        }
-      }
-    }
-
-    if (canSpawn) {
-      this.birds.add(newBird);
-      this.distanceSinceLastBird = 0;
-    }
+    this.birds.add(newBird);
+    this.distanceSinceLastBird = 0;
   }
 
   public update(
