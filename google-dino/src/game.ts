@@ -6,7 +6,7 @@ import {
 } from "./constants";
 import { Dinasour } from "./sprites/dinasour";
 import { cloudManager, SpriteManager } from "./sprites/manager";
-import { CactusManager, ObstacleManager } from "./sprites/obstacles/manager";
+import { CactusManager } from "./sprites/obstacles/manager";
 import { Background } from "./ui/background";
 
 export class Game {
@@ -35,12 +35,12 @@ export class Game {
       viewWidth: this.canvas.width,
       viewHeight: this.canvas.height,
     });
-    ObstacleManager.initAttrs({
-      viewWidth: this.canvas.width,
-      viewHeight: this.canvas.height / 2 + 10,
-    });
+
     this.cloudManager = new cloudManager(assets.environment.cloud);
-    this.cactusManager = new CactusManager(assets.cactus);
+    this.cactusManager = new CactusManager(assets.cactus, {
+      w: this.canvas.width,
+      h: this.canvas.height,
+    });
   }
 
   public init() {
@@ -71,7 +71,7 @@ export class Game {
   public update(delta: number) {
     this.background.update(delta, this.dino.speed);
     this.cloudManager.update(delta, this.dino.speed);
-    this.cactusManager.update(delta, this.dino.distance, this.dino.speed);
+    this.cactusManager.update(delta, this.dino.speed);
     this.dino.update(delta);
   }
 
