@@ -6,7 +6,7 @@ interface DepAttrs {
   viewHeight: number;
 }
 
-export abstract class SpriteManager<
+export abstract class EnvironmentManager<
   T extends {
     update(delta: number, shift: number): void;
     draw(ctx: CanvasRenderingContext2D): void;
@@ -26,7 +26,7 @@ export abstract class SpriteManager<
     entityFrames: HTMLImageElement[],
     spacing?: { max: number; min: number }
   ) {
-    if (!SpriteManager.depAttrs)
+    if (!EnvironmentManager.depAttrs)
       throw new Error("must initialize dependency attributes");
 
     this.entityFrames = Object.freeze(entityFrames);
@@ -59,7 +59,7 @@ export abstract class SpriteManager<
 
   public draw(ctx: CanvasRenderingContext2D) {
     for (let sprite of this.sprites) {
-      if (sprite.isInView(SpriteManager.depAttrs.viewWidth)) {
+      if (sprite.isInView(EnvironmentManager.depAttrs.viewWidth)) {
         sprite.draw(ctx);
       }
     }
@@ -70,7 +70,7 @@ export abstract class SpriteManager<
   }
 }
 
-export class cloudManager extends SpriteManager<Cloud> {
+export class cloudManager extends EnvironmentManager<Cloud> {
   constructor(image: HTMLImageElement, spacing?: { max: number; min: number }) {
     super([image], spacing);
   }

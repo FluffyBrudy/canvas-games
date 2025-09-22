@@ -5,9 +5,9 @@ import {
   type TAssets,
 } from "./constants";
 import { Dinasour } from "./sprites/dinasour";
-import { cloudManager, SpriteManager } from "./sprites/manager";
+import { cloudManager, EnvironmentManager } from "./environment/manager";
 import { BirdManager, CactusManager } from "./sprites/obstacles/manager";
-import { Background } from "./ui/background";
+import { Background } from "./environment/background";
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -32,7 +32,7 @@ export class Game {
       40,
       this.canvas.height / 2 + this.background.getHeight() / 2 + 5
     );
-    SpriteManager.initAttrs({
+    EnvironmentManager.initAttrs({
       viewWidth: this.canvas.width,
       viewHeight: this.canvas.height,
     });
