@@ -57,6 +57,7 @@ export class Background {
   }
 
   update(delta: number, playerSpeed: number) {
+    console.log(playerSpeed);
     this.scroll += playerSpeed * delta;
     if (this.scroll > this.image.width) this.scroll = 0;
   }

@@ -19,6 +19,7 @@ export const BG_COLOR = "#423f3fff";
 export const MAX_SCREEN_WIDTH = 500;
 export const MAX_SCREEN_HEIGHT = 500;
 export const DINO_SIZE = 32;
+export const DUCK_ALT_FACTOR = 8;
 export const DEFAULT_WORLD_SHIFT = 300;
 export const CACTUS_LARGE_DOUBLE_SCALE = 0.4;
 export const BIRD_SCALE = 0.4;

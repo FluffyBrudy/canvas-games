@@ -1,5 +1,6 @@
 import {
   DEFAULT_WORLD_SHIFT,
+  DUCK_ALT_FACTOR,
   type TAssets,
   type TDinoState,
   type TKeyType,
@@ -21,7 +22,7 @@ export class Dinasour {
   private traveledDistance: number;
   private nextSpeedIncDist = 100;
   private prevSpeedIncDist = 100;
-  private speedIncrement = 0.5;
+  private speedIncrement = 1;
   private currentSpeed = DEFAULT_WORLD_SHIFT;
   private altFactor = 0;
 
@@ -105,7 +106,7 @@ export class Dinasour {
 
   manageDuck() {
     if (this.state === "duck") {
-      this.altFactor = 8;
+      this.altFactor = DUCK_ALT_FACTOR;
     } else {
       this.altFactor = 0;
     }

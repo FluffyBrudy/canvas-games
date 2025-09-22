@@ -8,3 +8,9 @@ canvas {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+@font-face {
+  font-family: "font-game";
+  src: url("./assets/font/font.ttf");
+  font-weight: bolder;
+}

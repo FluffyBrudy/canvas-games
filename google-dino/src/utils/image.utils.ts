@@ -85,12 +85,12 @@ export function pixelPerfectCollision<
   const bRect = b.rect;
   if (!rectCollision(aRect, bRect)) return false;
   console.log("coll");
-  const overlapLeft = Math.ceil(Math.max(aRect.x, bRect.x));
-  const overlapRight = Math.floor(
+  const overlapLeft = Math.floor(Math.max(aRect.x, bRect.x));
+  const overlapRight = Math.ceil(
     Math.min(aRect.x + aRect.w, bRect.x + bRect.w)
   );
-  const overlapTop = Math.ceil(Math.max(aRect.y, bRect.y));
-  const overlapBottom = Math.floor(
+  const overlapTop = Math.floor(Math.max(aRect.y, bRect.y));
+  const overlapBottom = Math.ceil(
     Math.min(aRect.y + aRect.h, bRect.y + bRect.h)
   );
 

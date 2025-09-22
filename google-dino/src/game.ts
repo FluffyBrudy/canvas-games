@@ -3,6 +3,7 @@ import {
   BIRD_SCALE,
   CACTUS_LARGE_DOUBLE_SCALE,
   DINO_SIZE,
+  DUCK_ALT_FACTOR,
   MAX_SCREEN_HEIGHT,
   MAX_SCREEN_WIDTH,
   type PreloadedSpritesImageData,
@@ -18,6 +19,7 @@ import {
 } from "./utils/image.utils";
 
 export class Game {
+  private static collidableSpritesImageData: PreloadedSpritesImageData;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private background: Background;
@@ -25,7 +27,9 @@ export class Game {
   private cloudManager: cloudManager;
   private cactusManager: CactusManager;
   private birdManager: BirdManager;
-  private static collidableSpritesImageData: PreloadedSpritesImageData;
+  private score: number = 0;
+  private prevDistanceScore = 0;
+  private pause: boolean = true;
 
   constructor(assets: TAssets) {
     Game.collidableSpritesImageData = Game.preloadSpritesData(assets);
@@ -75,25 +79,28 @@ export class Game {
   }
 
   static preloadSpritesData(assets: TAssets) {
-    const dinoScale = DINO_SIZE / assets.dino.idle[0].width;
+    const dinoBaseSize = { w: DINO_SIZE, h: DINO_SIZE };
+    const dinoDuckSize = {
+      w: DINO_SIZE + DUCK_ALT_FACTOR,
+      h: DINO_SIZE - DUCK_ALT_FACTOR,
+    };
     const dinoFrameColorArray = {
       idle: assets.dino.idle.map((frame) =>
-        getImageColorUint8Array(frame, dinoScale)
+        getImageColorUint8Array(frame, dinoBaseSize)
       ),
       duck: assets.dino.duck.map((frame) =>
-        getImageColorUint8Array(frame, dinoScale)
+        getImageColorUint8Array(frame, dinoDuckSize)
       ),
       run: assets.dino.run.map((frame) =>
-        getImageColorUint8Array(frame, dinoScale)
+        getImageColorUint8Array(frame, dinoBaseSize)
       ),
       jump: assets.dino.jump.map((frame) =>
-        getImageColorUint8Array(frame, dinoScale)
+        getImageColorUint8Array(frame, dinoBaseSize)
       ),
       dead: assets.dino.dead.map((frame) =>
-        getImageColorUint8Array(frame, dinoScale)
+        getImageColorUint8Array(frame, dinoBaseSize)
       ),
     };
-    console.log(dinoFrameColorArray.run);
     const cactusesColorArray = Object.entries(assets.cactus).reduce(
       (accm, [key, img]) => {
         accm[key as keyof TAssets["cactus"]] = getImageColorUint8Array(
@@ -102,7 +109,10 @@ export class Game {
         );
         return accm;
       },
-      {} as Record<keyof TAssets["cactus"], ReturnType<typeof getImageColorUint8Array>>
+      {} as Record<
+        keyof TAssets["cactus"],
+        ReturnType<typeof getImageColorUint8Array>
+      >
     );
     const birdFramesColorArray = {
       flap: assets.bird.flap.map((frame) =>
@@ -130,10 +140,12 @@ export class Game {
 
   public handleEvent() {
     window.addEventListener("keydown", (k) => {
-      if (k.key === "ArrowUp") {
+      if (k.key === "ArrowUp" || k.key === " ") {
         this.dino.changeState("UP");
       } else if (k.key === "ArrowDown") {
         this.dino.changeState("DOWN");
+      } else if (k.key === "Escape") {
+        this.pause = !this.pause;
       }
     });
     window.addEventListener("keyup", (k) => {
@@ -141,13 +153,28 @@ export class Game {
     });
   }
 
+  updateScore() {
+    this.score += (this.dino.distance - this.prevDistanceScore) / 10;
+    this.prevDistanceScore = this.dino.distance;
+  }
+
+  drawScore() {
+    this.ctx.font = "48px font-game";
+    this.ctx.fillStyle = "white";
+    this.ctx.textAlign = "right";
+    this.ctx.textBaseline = "top";
+    this.ctx.fillText(`${~~this.score}`, this.canvas.width, 0);
+  }
+
   public update(delta: number) {
-    this.handleCollision();
+    if (this.pause) return;
+    this.updateScore();
     this.background.update(delta, this.dino.speed);
     this.cloudManager.update(delta, this.dino.speed);
     this.cactusManager.update(delta, this.dino.speed);
     this.birdManager.update(delta, this.dino.speed);
     this.dino.update(delta);
+    this.handleCollision();
   }
 
   public draw() {
@@ -156,6 +183,7 @@ export class Game {
     this.cactusManager.draw(this.ctx);
     this.birdManager.draw(this.ctx);
     this.dino.draw(this.ctx);
+    this.drawScore();
   }
 
   public clearScreen() {
@@ -178,7 +206,9 @@ export class Game {
           pix: Game.collidableSpritesImageData.cactus[cactusState],
         }
       );
-      if (collision) alert("yes");
+      if (collision) {
+        location.reload();
+      }
     }
   }
 }

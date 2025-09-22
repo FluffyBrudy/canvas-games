@@ -5,7 +5,6 @@ import { ASSETS } from "./constants";
 
 async function main() {
   const assets = await loadAllAssets(ASSETS);
-  console.log(assets);
   const game = new Game(assets);
   game.handleEvent();
 
@@ -21,6 +20,7 @@ async function main() {
     game.clearScreen();
     game.update(delta);
     game.draw();
+
     requestAnimationFrame(animate);
   };
 
