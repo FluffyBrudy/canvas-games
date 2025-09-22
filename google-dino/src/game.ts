@@ -102,7 +102,7 @@ export class Game {
         );
         return accm;
       },
-      {} as Record<keyof TAssets["cactus"], Uint8ClampedArray>
+      {} as Record<keyof TAssets["cactus"], ReturnType<typeof getImageColorUint8Array>>
     );
     const birdFramesColorArray = {
       flap: assets.bird.flap.map((frame) =>
@@ -171,11 +171,11 @@ export class Game {
       const collision = pixelPerfectCollision(
         {
           rect: this.dino.getRect(),
-          pixArray: Game.collidableSpritesImageData.dino[state][frame],
+          pix: Game.collidableSpritesImageData.dino[state][frame],
         },
         {
           rect: sprite.getRect(),
-          pixArray: Game.collidableSpritesImageData.cactus[cactusState],
+          pix: Game.collidableSpritesImageData.cactus[cactusState],
         }
       );
       if (collision) alert("yes");

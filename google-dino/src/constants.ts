@@ -13,6 +13,7 @@ import birdFlapUp from "./assets/graphics/bird/flapup.png";
 import envBackground from "./assets/graphics/environment/bg.png";
 import envCloud from "./assets/graphics/environment/cloud.png";
 import buttonRestart from "./assets/graphics/button/restart.png";
+import type { ImagePixels } from "./utils/image.utils";
 
 export const BG_COLOR = "#423f3fff";
 export const MAX_SCREEN_WIDTH = 500;
@@ -66,14 +67,14 @@ export type TAssets = ReplaceLeavesWithImage<typeof ASSETS, HTMLImageElement>;
 
 export interface PreloadedSpritesImageData {
   dino: {
-    idle: Uint8ClampedArray<ArrayBufferLike>[];
-    duck: Uint8ClampedArray<ArrayBufferLike>[];
-    run: Uint8ClampedArray<ArrayBufferLike>[];
-    jump: Uint8ClampedArray<ArrayBufferLike>[];
-    dead: Uint8ClampedArray<ArrayBufferLike>[];
+    idle: ImagePixels[];
+    duck: ImagePixels[];
+    run: ImagePixels[];
+    jump: ImagePixels[];
+    dead: ImagePixels[];
   };
-  cactus: Record<"largeDouble", Uint8ClampedArray<ArrayBufferLike>>;
+  cactus: Record<"largeDouble", ImagePixels>;
   bird: {
-    flap: Uint8ClampedArray<ArrayBufferLike>[];
+    flap: ImagePixels[];
   };
 }

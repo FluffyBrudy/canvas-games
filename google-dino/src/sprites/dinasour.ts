@@ -128,7 +128,7 @@ export class Dinasour {
       x: this.x,
       y: this.y + this.altFactor,
       w: this.size + this.altFactor,
-      h: this.size + this.altFactor,
+      h: this.size - this.altFactor,
     };
   }
 
