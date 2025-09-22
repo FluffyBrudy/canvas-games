@@ -94,6 +94,10 @@ export class BirdManager {
     this.yConstraints = yConstrainBase;
   }
 
+  public getSprites() {
+    return this.birds;
+  }
+
   private trySpawn(playerSpeed: number, delta: number) {
     this.distanceSinceLastBird += playerSpeed * delta;
 

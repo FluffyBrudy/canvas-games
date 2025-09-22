@@ -338,9 +338,11 @@ export class Game {
   }
 
   handleCollision() {
-    const sprites = this.cactusManager.getSprites();
+    const cactusSprites = this.cactusManager.getSprites();
+    const birdSprites = this.birdManager.getSprites();
     const [state, frame] = this.dino.getStateAndFrame();
-    for (let sprite of sprites) {
+
+    for (let sprite of cactusSprites) {
       const cactusState = sprite.getType();
       const collision = pixelPerfectCollision(
         {
@@ -350,6 +352,24 @@ export class Game {
         {
           rect: sprite.getRect(),
           pix: Game.collidableSpritesImageData.cactus[cactusState],
+        }
+      );
+      if (collision) {
+        this.state = "GAME_OVER";
+        return;
+      }
+    }
+
+    for (let bird of birdSprites) {
+      const bFrame = bird.getFrameIndex();
+      const collision = pixelPerfectCollision(
+        {
+          rect: this.dino.getRect(),
+          pix: Game.collidableSpritesImageData.dino[state][frame],
+        },
+        {
+          rect: bird.getRect(),
+          pix: Game.collidableSpritesImageData.bird.flap[bFrame],
         }
       );
       if (collision) {

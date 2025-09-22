@@ -5,6 +5,10 @@ export class Bird extends BaseObstacle {
   private animationSpeed: number;
   private animationFrames: readonly HTMLImageElement[];
 
+  public getFrameIndex() {
+    return ~~this.frameIndex;
+  }
+
   constructor(
     x: number,
     y: number,
