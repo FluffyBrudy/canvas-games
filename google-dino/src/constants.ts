@@ -19,6 +19,8 @@ export const MAX_SCREEN_WIDTH = 500;
 export const MAX_SCREEN_HEIGHT = 500;
 export const DINO_SIZE = 32;
 export const DEFAULT_WORLD_SHIFT = 300;
+export const CACTUS_LARGE_DOUBLE_SCALE = 0.4;
+export const BIRD_SCALE = 0.4;
 
 export const DinoState = {
   IDLE: "idle",
@@ -56,8 +58,22 @@ export const ASSETS = {
 export type TDinoState = (typeof DinoState)[keyof typeof DinoState];
 export type TKeyType = "UP" | "DOWN" | "RESET";
 
-type ReplaceLeavesWithImage<T> = T extends object
-  ? { [K in keyof T]: ReplaceLeavesWithImage<T[K]> }
-  : HTMLImageElement;
+export type ReplaceLeavesWithImage<T, V> = T extends object
+  ? { [K in keyof T]: ReplaceLeavesWithImage<T[K], V> }
+  : V;
 
-export type TAssets = ReplaceLeavesWithImage<typeof ASSETS>;
+export type TAssets = ReplaceLeavesWithImage<typeof ASSETS, HTMLImageElement>;
+
+export interface PreloadedSpritesImageData {
+  dino: {
+    idle: Uint8ClampedArray<ArrayBufferLike>[];
+    duck: Uint8ClampedArray<ArrayBufferLike>[];
+    run: Uint8ClampedArray<ArrayBufferLike>[];
+    jump: Uint8ClampedArray<ArrayBufferLike>[];
+    dead: Uint8ClampedArray<ArrayBufferLike>[];
+  };
+  cactus: Record<"largeDouble", Uint8ClampedArray<ArrayBufferLike>>;
+  bird: {
+    flap: Uint8ClampedArray<ArrayBufferLike>[];
+  };
+}

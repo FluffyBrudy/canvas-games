@@ -1,6 +1,5 @@
 import {
   DEFAULT_WORLD_SHIFT,
-  DINO_SIZE,
   type TAssets,
   type TDinoState,
   type TKeyType,
@@ -15,16 +14,27 @@ export class Dinasour {
   private jumpStep: number;
   private isDuckQueue: boolean;
   private isJumping: boolean;
-  private x: number = 0;
-  private y: number = 0;
+  private x: number;
+  private y: number;
+  private size: number;
   private groundY: number = 0;
   private traveledDistance: number;
   private nextSpeedIncDist = 100;
   private prevSpeedIncDist = 100;
   private speedIncrement = 0.5;
   private currentSpeed = DEFAULT_WORLD_SHIFT;
+  private altFactor = 0;
 
-  constructor(stateAnimations: TAssets["dino"]) {
+  constructor(
+    stateAnimations: TAssets["dino"],
+    x: number,
+    y: number,
+    size: number
+  ) {
+    this.x = x;
+    this.y = y;
+    this.groundY = this.y;
+    this.size = size;
     this.frameIndex = 0;
     this.animationSpeed = 12;
     this.state = "run";
@@ -50,12 +60,6 @@ export class Dinasour {
     return { x: this.x, y: this.y };
   }
 
-  initPos(x: number, y: number) {
-    this.x = x;
-    this.y = ~~y - DINO_SIZE;
-    this.groundY = this.y;
-  }
-
   jump() {
     this.isJumping = true;
     this.jumpProgress = 0;
@@ -63,16 +67,13 @@ export class Dinasour {
 
   draw(ctx: CanvasRenderingContext2D) {
     const currentFrame = this.animationStates[this.state][~~this.frameIndex];
-    let alterFactor = 0;
-    if (this.state === "duck") {
-      alterFactor = 8;
-    }
+
     ctx.drawImage(
       currentFrame,
       this.x,
-      this.y + alterFactor,
-      DINO_SIZE + alterFactor,
-      DINO_SIZE - alterFactor
+      this.y + this.altFactor,
+      this.size + this.altFactor,
+      this.size - this.altFactor
     );
   }
 
@@ -102,6 +103,14 @@ export class Dinasour {
     }
   }
 
+  manageDuck() {
+    if (this.state === "duck") {
+      this.altFactor = 8;
+    } else {
+      this.altFactor = 0;
+    }
+  }
+
   update(delta: number) {
     this.traveledDistance += delta * this.currentSpeed;
     if (this.traveledDistance >= this.nextSpeedIncDist) {
@@ -110,12 +119,26 @@ export class Dinasour {
       this.nextSpeedIncDist = this.prevSpeedIncDist + this.nextSpeedIncDist;
     }
     this.animate(delta);
+    this.manageDuck();
     this.manageJump(delta);
+  }
+
+  getRect() {
+    return {
+      x: this.x,
+      y: this.y + this.altFactor,
+      w: this.size + this.altFactor,
+      h: this.size + this.altFactor,
+    };
   }
 
   getCurrentFrameSize() {
     const currentFrame = this.animationStates[this.state][this.frameIndex];
-    return { w: currentFrame.width, h: currentFrame.height };
+    return {
+      w: currentFrame.width,
+      h: currentFrame.height,
+      image: currentFrame,
+    };
   }
 
   changeState(keyType: TKeyType) {
@@ -132,5 +155,9 @@ export class Dinasour {
       this.state = "run";
       this.isDuckQueue = false;
     }
+  }
+
+  getStateAndFrame(): [TDinoState, number] {
+    return [this.state, ~~this.frameIndex];
   }
 }

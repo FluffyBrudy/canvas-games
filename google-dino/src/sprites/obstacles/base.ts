@@ -32,4 +32,8 @@ export abstract class BaseObstacle {
   getPosition(): { x: number; y: number } {
     return { x: this.x, y: this.y };
   }
+
+  getRect() {
+    return { x: this.x, y: this.y, ...this.size };
+  }
 }

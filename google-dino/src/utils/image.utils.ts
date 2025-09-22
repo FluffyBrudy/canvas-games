@@ -7,6 +7,18 @@ export function loadImages(paths: string[]) {
   return frames;
 }
 
+export function getImageColorUint8Array(
+  image: HTMLImageElement,
+  scale = 1
+): Uint8ClampedArray {
+  const imCanvas = document.createElement("canvas");
+  const ctx = imCanvas.getContext("2d")!;
+  imCanvas.width = ~~(image.width * scale);
+  imCanvas.height = ~~(image.height * scale);
+  ctx.drawImage(image, 0, 0);
+  return ctx.getImageData(0, 0, imCanvas.width, imCanvas.height).data;
+}
+
 export async function loadImageAsync(paths: string[] | string) {
   if (!Array.isArray(paths)) {
     return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -42,4 +54,46 @@ export async function loadAllAssets<
     }
     return res;
   }
+}
+
+export type Rect = { x: number; y: number; w: number; h: number };
+export function rectCollision(a: Rect, b: Rect) {
+  return (
+    a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h
+  );
+}
+
+type SpriteAndRect = object & {
+  rect: Rect;
+  pixArray: Uint8ClampedArray;
+};
+export type SpriteWithRectAndImage<T extends SpriteAndRect> = T;
+
+export function pixelPerfectCollision<
+  T1 extends SpriteAndRect,
+  T2 extends SpriteAndRect
+>(a: SpriteWithRectAndImage<T1>, b: SpriteWithRectAndImage<T2>) {
+  const aRect = a.rect;
+  const bRect = b.rect;
+  if (!rectCollision(aRect, bRect)) return false;
+  console.log("coll");
+  const overlapLeft = Math.max(aRect.x, bRect.x);
+  const overlapRight = Math.min(aRect.x + aRect.w, bRect.x + bRect.w);
+  const overlapTop = Math.max(aRect.y, bRect.y);
+  const overlapBottom = Math.min(aRect.y + aRect.h, bRect.y + bRect.h);
+
+  for (let y = overlapTop; y < overlapBottom; y++) {
+    for (let x = overlapLeft; x < overlapRight; x++) {
+      const [ax, ay] = [x - aRect.x, y - aRect.y];
+      const [bx, by] = [x - bRect.x, y - bRect.y];
+
+      const aAlpha = a.pixArray[~~(ay * aRect.w + ax) * 4 + 3];
+      const bAlpha = b.pixArray[~~(by * bRect.w + bx) * 4 + 3];
+
+      if (aAlpha > 0 && bAlpha > 0) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
