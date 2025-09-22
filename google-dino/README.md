@@ -14,7 +14,7 @@
   - find left and right overlap
   - iterate y coor as  row and x coor
   - access pixel using row-major indexing technique mention above
-  - simplest of all to check if pixel perfect collision is, if any of image has alpha > 0 then its collision
+  - simplest of all to check if pixel perfect collision is, if both of image has alpha > 0 then its collision
   for refrence look this function `pixelPerfectCollision` located at file [`image.utils.ts`](src/utils/image.utils.ts) contains helper functions for working with images.
 
 
