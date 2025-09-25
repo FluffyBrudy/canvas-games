@@ -26,3 +26,5 @@ export enum Precedence {
   EQUAL = 0,
   LOWER = -1,
 }
+
+export const CARD_FONT_SIZE = 92;

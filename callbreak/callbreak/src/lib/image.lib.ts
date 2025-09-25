@@ -1,42 +1,71 @@
-/**
- * modify attributes `width` and `height` at your own risk
- */
-export class ImageObj extends Image {
-  private pixels: Uint8ClampedArray | null = null;
+type Tsize = { w: number; h: number };
+type TSizeOrScale = Tsize | number;
+
+export class ImageObj {
+  private _image: HTMLImageElement;
   private loaded = false;
+  private size: Tsize;
 
-  constructor(path: string, size: { w: number; h: number } | number = 1) {
-    super();
-
-    this.src = path;
-    this.onload = () => {
-      if (typeof size === "number") {
-        this.width = ~~(this.width * size);
-        this.height = ~~(this.height * size);
-      } else {
-        this.width = size.w;
-        this.height = size.h;
-      }
-      this.loaded = true;
-      retriveImgColorArray(this);
-    };
+  constructor(path: string, size: TSizeOrScale = 1) {
+    this._image = new Image();
+    this._image.src = path;
+    this.size = { w: 0, h: 0 };
+    this.sizeOrScale = size;
   }
 
-  public isLoaded() {
+  private sizeOrScale: TSizeOrScale;
+
+  async load() {
+    await this._image.decode();
+
+    if (typeof this.sizeOrScale === "number") {
+      this.size = {
+        w: Math.round(this._image.width * this.sizeOrScale),
+        h: Math.round(this._image.height * this.sizeOrScale),
+      };
+    } else {
+      this.size = { ...this.sizeOrScale };
+    }
+
+    if (
+      this.size.w !== this._image.width ||
+      this.size.h !== this._image.height
+    ) {
+      this._image = await this.scaleImage(this._image, this.size);
+    }
+    this.loaded = true;
+  }
+
+  private async scaleImage(
+    image: HTMLImageElement,
+    size: Tsize
+  ): Promise<HTMLImageElement> {
+    const canvas = document.createElement("canvas");
+    canvas.width = size.w;
+    canvas.height = size.h;
+    const ctx = canvas.getContext("2d")!;
+
+    await image.decode();
+
+    ctx.drawImage(image, 0, 0, size.w, size.h);
+
+    const scaledImage = new Image();
+    scaledImage.src = canvas.toDataURL();
+
+    await scaledImage.decode();
+
+    return scaledImage;
+  }
+
+  get image() {
+    return this._image;
+  }
+
+  getSize(): Tsize {
+    return this.size;
+  }
+
+  isLoaded(): boolean {
     return this.loaded;
   }
-
-  public getPixels() {
-    return this.pixels;
-  }
-}
-
-function retriveImgColorArray(image: ImageObj): Uint8ClampedArray {
-  const imcanvas = document.createElement("canvas");
-  imcanvas.width = image.width;
-  imcanvas.height = image.height;
-  const ctx = imcanvas.getContext("2d")!;
-  ctx.fillStyle = "rgba(0, 0, 0, 0)";
-  ctx.drawImage(image, 0, 0, imcanvas.width, imcanvas.height);
-  return ctx.getImageData(0, 0, imcanvas.width, imcanvas.height).data;
 }
