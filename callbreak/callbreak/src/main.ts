@@ -1,8 +1,8 @@
-import { preload, SuitImages } from "./assets-loader";
+import { preload, SuitImages } from "./systems/assets-loader";
 import { Rank, Suit } from "./constants";
 import { Card } from "./models/card";
 import "./style.css";
-import { CustomEvent } from "./utils/event";
+import { CustomEvent } from "./core/event";
 
 async function main() {
   const canvas = document.querySelector("canvas")!;

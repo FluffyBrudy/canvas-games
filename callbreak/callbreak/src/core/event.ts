@@ -29,10 +29,12 @@ export class CustomEvent {
     });
     window.addEventListener("keydown", (e) => {
       if (!this.state.keysDown.has(e.key)) {
-        this.state.keysDown.add(e.key);
+        this.state.keysDown.add(e.key.toLocaleLowerCase());
       }
     });
-    window.addEventListener("keyup", (e) => this.state.keysDown.delete(e.key));
+    window.addEventListener("keyup", (e) =>
+      this.state.keysDown.delete(e.key.toLocaleLowerCase())
+    );
   }
 
   getState() {

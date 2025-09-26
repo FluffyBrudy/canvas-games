@@ -1,7 +1,7 @@
 import { Suit, type Rank } from "../constants";
 import { ImageObj } from "../lib/image.lib";
-import { Rect } from "../utils/rect";
-import { CustomEvent } from "../utils/event";
+import { Rect } from "../core/rect";
+import { CustomEvent } from "../core/event";
 
 export class Card {
   private rank: Rank;
