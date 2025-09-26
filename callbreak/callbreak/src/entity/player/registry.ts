@@ -17,4 +17,8 @@ export class CardRegistry {
   unregister(cardModel: CardModel) {
     this.sprites.delete(cardModel);
   }
+
+  getModelAndSprite() {
+    return this.sprites.entries();
+  }
 }

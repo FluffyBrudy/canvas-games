@@ -6,6 +6,7 @@ export class Deck {
 
   constructor() {
     this.cards = this.fullCards();
+    this.shuffle();
   }
 
   private fullCards() {
@@ -32,5 +33,15 @@ export class Deck {
 
   isEmpty() {
     return this.cards.length == 0;
+  }
+
+  shuffle() {
+    for (let i = this.cards.length - 1; i <= 0; i--) {
+      const randIndex = Math.floor(Math.random() * (i + 1));
+      [this.cards[i], this.cards[randIndex]] = [
+        this.cards[randIndex],
+        this.cards[i],
+      ];
+    }
   }
 }

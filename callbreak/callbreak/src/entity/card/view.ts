@@ -15,15 +15,31 @@ export class CardSprite {
   }
 
   info() {
-    return this.model.info();
+    return this.model;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, isHighlighted = false) {
+    ctx.save();
     ctx.beginPath();
+
+    if (isHighlighted) {
+      ctx.strokeStyle = "gold";
+      ctx.lineWidth = 5;
+      ctx.shadowColor = "rgba(255, 215, 0, 0.8)";
+      ctx.shadowBlur = 15;
+      ctx.strokeRect(
+        this.rect.x,
+        this.rect.y,
+        this.rect.width,
+        this.rect.height
+      );
+      // ctx.shadowBlur = 0;
+    }
     ctx.drawImage(this.image, this.rect.x, this.rect.y);
 
     ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
     ctx.textBaseline = "middle";
+    ctx.fillStyle = "black";
 
     const fontWidth = ctx.measureText(this.model.rank.toString()).width;
     ctx.fillText(
@@ -33,6 +49,7 @@ export class CardSprite {
     );
 
     ctx.closePath();
+    ctx.restore();
   }
 
   update(eventStates?: ReturnType<CustomEvent["getState"]>) {

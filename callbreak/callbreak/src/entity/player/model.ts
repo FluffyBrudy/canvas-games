@@ -24,28 +24,32 @@ export class Hand {
     this.cards.push(card);
   }
 
-  reveal(choice: number): CardModel {
-    return this.cards.splice(choice, 1)[0];
+  reveal(model: CardModel): CardModel {
+    return this.cards.splice(this.getIndex(model), 1)[0];
   }
 
-  chooseRevealableCards(leadingCard?: CardModel): [number, CardModel][] {
+  private getIndex(model: CardModel) {
+    return this.cards.indexOf(model);
+  }
+
+  chooseRevealableCards(leadingCard?: CardModel): CardModel[] {
     if (!leadingCard) {
-      return this.cards.map((card, i) => [i, card] as [number, CardModel]);
+      return this.cards.map((card) => card);
     }
 
     const sameSuits = this.cards
-      .map((card, i) => [i, card] as [number, CardModel])
-      .filter(([_, card]) => card.suit === leadingCard.suit);
+      .map((card) => card)
+      .filter((card) => card.suit === leadingCard.suit);
 
     if (sameSuits.length > 0) return sameSuits;
 
     const spades = this.cards
-      .map((card, i) => [i, card] as [number, CardModel])
-      .filter(([_, card]) => card.suit === Suit.SPADE);
+      .map((card) => card)
+      .filter((card) => card.suit === Suit.SPADE);
 
     if (spades.length > 0) return spades;
 
-    return this.cards.map((card, i) => [i, card] as [number, CardModel]);
+    return this.cards.map((card) => card);
   }
 
   toString(): string {
@@ -53,7 +57,7 @@ export class Hand {
   }
 }
 
-export class AIHands extends Hand {
+export class AIHand extends Hand {
   constructor(label?: string) {
     super(false, label);
   }
@@ -67,7 +71,7 @@ export class AIHands extends Hand {
     if (!leadingCard) {
       const sorted = [...this.cards].sort((a, b) => a.rank - b.rank);
       card = this.omitAceIfPossible(sorted);
-      return this.reveal(this.cards.indexOf(card));
+      return this.reveal(card);
     }
 
     const sameSuits = this.cards.filter((c) => c.suit === leadingCard.suit);
@@ -84,7 +88,7 @@ export class AIHands extends Hand {
       card = this.omitAceIfPossible(sorted);
     }
 
-    return this.reveal(this.cards.indexOf(card));
+    return this.reveal(card);
   }
 
   private decide(
