@@ -36,7 +36,7 @@ export class Deck {
   }
 
   shuffle() {
-    for (let i = this.cards.length - 1; i <= 0; i--) {
+    for (let i = this.cards.length - 1; i >= 0; i--) {
       const randIndex = Math.floor(Math.random() * (i + 1));
       [this.cards[i], this.cards[randIndex]] = [
         this.cards[randIndex],
