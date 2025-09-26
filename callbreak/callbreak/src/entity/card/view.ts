@@ -1,23 +1,21 @@
-import { Suit, type Rank } from "../constants";
-import { ImageObj } from "../lib/image.lib";
-import { Rect } from "../core/rect";
-import { CustomEvent } from "../core/event";
+import { Rect } from "../../core/rect";
+import { CustomEvent } from "../../core/event";
+import { SuitImages } from "../../systems/assets-loader";
+import type { CardModel } from "./model";
 
-export class Card {
-  private rank: Rank;
-  private suit: Suit;
+export class CardSprite {
   private image: HTMLImageElement;
+  private model: CardModel;
   public rect: Rect;
 
-  constructor(rank: Rank, suit: Suit, x: number, y: number, image: ImageObj) {
-    this.rank = rank;
-    this.suit = suit;
-    this.image = image.image;
+  constructor(cardModel: CardModel, x: number, y: number) {
+    this.model = cardModel;
+    this.image = SuitImages[cardModel.suit].image;
     this.rect = new Rect(x, y, this.image.width, this.image.height);
   }
 
   info() {
-    return { rank: this.rank, suit: this.suit };
+    return this.model.info();
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -27,9 +25,9 @@ export class Card {
     ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
     ctx.textBaseline = "middle";
 
-    const fontWidth = ctx.measureText(this.rank.toString()).width;
+    const fontWidth = ctx.measureText(this.model.rank.toString()).width;
     ctx.fillText(
-      this.rank.toString(),
+      this.model.rank.toString(),
       this.rect.center.x - ~~(fontWidth / 2),
       this.rect.center.y
     );

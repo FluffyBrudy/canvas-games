@@ -1,6 +1,7 @@
-import { preload, SuitImages } from "./systems/assets-loader";
+import { preload } from "./systems/assets-loader";
 import { Rank, Suit } from "./constants";
-import { Card } from "./models/card";
+import { CardSprite } from "./entity/card/view";
+import { CardModel } from "./entity/card/model";
 import "./style.css";
 import { CustomEvent } from "./core/event";
 
@@ -19,7 +20,7 @@ async function main() {
 
   await preload();
 
-  const card = new Card(Rank.ACE, Suit.CLUB, 0, 0, SuitImages.club);
+  const card = new CardSprite(new CardModel(Rank.ACE, Suit.HEART), 0, 0);
 
   const animate = () => {
     const stateSnapshot = Object.freeze(event.getState());
