@@ -34,43 +34,43 @@ export class Rect {
   }
 
   set left(x: number) {
-    this.x = x;
+    this.x = ~~x;
   }
 
   set right(x: number) {
-    this.x = x - this.width;
+    this.x = ~~(x - this.width);
   }
 
   set top(y: number) {
-    this.y = y;
+    this.y = ~~y;
   }
 
   set bottom(y: number) {
-    this.y = y - this.height;
+    this.y = ~~(y - this.height);
   }
 
   set center(coor: Coor) {
-    this.x = Math.round(coor.x - this.width / 2);
-    this.y = Math.round(coor.y - this.height / 2);
+    this.x = ~~(coor.x - this.width / 2);
+    this.y = ~~(coor.y - this.height / 2);
   }
 
   scale(ratio: number) {
     return {
-      w: this.width * ratio,
-      h: this.height * ratio,
+      w: ~~(this.width * ratio),
+      h: ~~(this.height * ratio),
     };
   }
 
   scaleip(ratio: number) {
-    this.width = this.width * ratio;
-    this.height = this.height * ratio;
+    this.width = ~~(this.width * ratio);
+    this.height = ~~(this.height * ratio);
     return this;
   }
 
   scaleAroundCenter(ratio: number) {
     const c = this.center;
-    this.width *= ratio;
-    this.height *= ratio;
+    this.width = ~~(this.width * ratio);
+    this.height = ~~(this.height * ratio);
     this.center = c;
     return this;
   }
@@ -88,5 +88,9 @@ export class Rect {
       this.top < rect.bottom &&
       rect.top < this.bottom
     );
+  }
+
+  coordinate() {
+    return { x: this.x, y: this.y };
   }
 }
