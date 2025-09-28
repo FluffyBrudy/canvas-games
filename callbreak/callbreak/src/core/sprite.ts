@@ -1,20 +1,27 @@
 import type { Rect } from "./rect";
 
-export class Group<T extends Sprite> {
+interface IGroup<T extends Sprite> {
+  remove(sprite?: T): void;
+  add?(sprite: T): void;
+  update?(kwargs?: Record<string, any>): void;
+  draw?(ctx?: CanvasRenderingContext2D): void;
+}
+
+export class Group<T extends Sprite> implements IGroup<T> {
   private _sprites = new Set<T>();
 
-  /**
-   * @param sprite append new sprites to group
-   */
   add(...sprites: T[]) {
     for (let sprite of sprites) {
       this._sprites.add(sprite);
-      sprite.updateGroup(this);
+      sprite._addGroup(this as IGroup<T>);
     }
   }
 
-  remove(sprite: T) {
-    this._sprites.delete(sprite);
+  remove(sprite?: T) {
+    if (sprite) {
+      this._sprites.delete(sprite);
+      sprite._removeGroup(this);
+    }
   }
 
   sprites() {
@@ -42,21 +49,21 @@ export class Group<T extends Sprite> {
   }
 }
 
-export class GroupSingle<T extends Sprite> {
+export class GroupSingle<T extends Sprite> implements IGroup<T> {
   private _sprite: T | null;
 
   constructor(sprite?: T) {
     this._sprite = sprite || null;
   }
 
-  /**
-   * @param sprite replaces existing sprite
-   */
   add(sprite: T) {
     this._sprite = sprite;
+    sprite._addGroup(this);
   }
 
   remove() {
+    if (!this._sprite) return;
+    this._sprite._removeGroup(this);
     this._sprite = null;
   }
 
@@ -80,14 +87,25 @@ export class GroupSingle<T extends Sprite> {
 export class Sprite {
   protected image!: HTMLImageElement;
   public rect!: Rect;
-  protected _groups: Group<Sprite>[] = [];
 
-  constructor(...groups: Group<Sprite>[]) {
+  protected _groups: (Group<Sprite> | GroupSingle<Sprite> | IGroup<Sprite>)[] =
+    [];
+
+  constructor(
+    ...groups: (Group<Sprite> | GroupSingle<Sprite> | IGroup<Sprite>)[]
+  ) {
     this._groups = groups;
   }
 
+  _addGroup(group: IGroup<Sprite>) {
+    if (!this._groups.includes(group)) this._groups.push(group);
+  }
+
+  _removeGroup(group: IGroup<Sprite>) {
+    this._groups = this._groups.filter((g) => g !== group);
+  }
+
   kill() {
-    console.log(this._groups, "***");
     for (let group of this._groups) {
       group.remove(this);
     }
@@ -97,13 +115,13 @@ export class Sprite {
     return this._groups.length > 0;
   }
 
-  remove<T extends Group<Sprite>>(groups: T[]) {
+  remove(groups: (Group<Sprite> | GroupSingle<Sprite> | IGroup<Sprite>)[]) {
     for (let group of groups) {
       group.remove(this);
     }
   }
 
-  updateGroup<T extends Sprite>(group: Group<T>) {
+  updateGroup(group: IGroup<Sprite>) {
     this._groups.push(group);
   }
 
@@ -111,7 +129,7 @@ export class Sprite {
     return [...this._groups];
   }
 
-  colliderect<T extends Sprite>(sprite: T) {
+  colliderect(sprite: Sprite) {
     return this.rect.colliderect(sprite.rect);
   }
 
