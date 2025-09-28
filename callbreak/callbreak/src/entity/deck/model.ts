@@ -11,15 +11,21 @@ export class Deck {
 
   private fullCards() {
     const cards: CardModel[] = [];
-    for (let suit of Object.values(Suit)) {
-      for (let rank of Object.values(Rank)) {
+    for (let suit of Object.values(Suit).filter((v) => typeof v === "string")) {
+      for (let rank of Object.values(Rank).filter(
+        (v) => typeof v === "number"
+      )) {
         const r = rank as number;
-        cards.push(new CardModel(r, suit));
+        cards.push(new CardModel(r, suit as Suit));
       }
     }
+
     return cards;
   }
 
+  /**
+   * This draw isn't ui drawing but pulling out cards
+   */
   draw(): CardModel;
   draw(n: number): CardModel[];
   draw(n?: number): CardModel | CardModel[] {
@@ -43,5 +49,9 @@ export class Deck {
         this.cards[i],
       ];
     }
+  }
+
+  size() {
+    return this.cards.length;
   }
 }

@@ -6,7 +6,6 @@ export enum Suit {
 }
 
 export enum Rank {
-  ACE = 14,
   TWO = 2,
   THREE = 3,
   FOUR = 4,
@@ -19,6 +18,7 @@ export enum Rank {
   JACK = 11,
   QUEEN = 12,
   KING = 13,
+  ACE = 14,
 }
 
 export enum Precedence {
@@ -27,4 +27,13 @@ export enum Precedence {
   LOWER = -1,
 }
 
-export const CARD_FONT_SIZE = 92;
+export const RANKLEN = ~~(Object.keys(Rank).length / 2);
+
+export enum CardState {
+  IDLE,
+  HOVERED,
+  DRAW,
+  PLACED,
+  COLLECTING,
+  CLOSED,
+}

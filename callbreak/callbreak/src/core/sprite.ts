@@ -79,7 +79,7 @@ export class GroupSingle<T extends Sprite> {
 
 export class Sprite {
   protected image!: HTMLImageElement;
-  protected rect!: Rect;
+  public rect!: Rect;
   protected _groups: Group<Sprite>[] = [];
 
   constructor(...groups: Group<Sprite>[]) {

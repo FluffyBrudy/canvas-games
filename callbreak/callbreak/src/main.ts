@@ -1,13 +1,14 @@
-import { preload } from "./systems/assets-loader";
-import { Rank, Suit } from "./constants";
-import { CardSprite } from "./entity/card/view";
-import { CardModel } from "./entity/card/model";
 import "./style.css";
 import { CustomEvent } from "./core/event";
+import { PlayerHandSprite } from "./entity/player/view";
+import { getCardAlignment, preload } from "./systems/assets-loader";
+
+import { Game } from "./game";
 
 async function main() {
   const canvas = document.querySelector("canvas")!;
   const event = new CustomEvent(canvas);
+  const ctx = canvas.getContext("2d")!;
 
   const resizeCallback = () => {
     canvas.width = window.innerWidth;
@@ -16,16 +17,28 @@ async function main() {
   window.addEventListener("load", resizeCallback, { once: true });
   window.addEventListener("resize", resizeCallback);
 
-  const ctx = canvas.getContext("2d")!;
-
   await preload();
 
-  const card = new CardSprite(new CardModel(Rank.ACE, Suit.HEART), 0, 0);
+  const { alignmentRectMap, stackAlignment } = getCardAlignment();
+
+  const players = (
+    Object.keys(alignmentRectMap) as Array<keyof typeof alignmentRectMap>
+  ).map(
+    (alignment) =>
+      new PlayerHandSprite(
+        alignmentRectMap[alignment],
+        alignment,
+        stackAlignment[alignment]
+      )
+  );
+
+  const game = new Game(players);
 
   const animate = () => {
-    const stateSnapshot = Object.freeze(event.getState());
-    card.draw(ctx);
-    card.update(stateSnapshot);
+    const eventStateSnapshot = Object.freeze(event.getState());
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    game.update({ eventState: eventStateSnapshot });
+    game.draw(ctx);
     requestAnimationFrame(animate);
   };
 
