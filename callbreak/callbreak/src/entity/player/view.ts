@@ -1,7 +1,6 @@
 import { CardState, RANKLEN } from "../../constants";
 import { Rect } from "../../core/rect";
 import { Group, Sprite } from "../../core/sprite";
-import { getCardSize } from "../../systems/assets-loader";
 import type {
   Coor,
   EventDepSpriteKwargs,
@@ -54,6 +53,7 @@ export class PlayerHandSprite extends Sprite {
     );
     this.cardSpritesMap.set(cardModel, sprite);
     this.cardGroup.add(sprite);
+    this.hand.add(cardModel);
 
     this.cardPos = {
       x: this.cardPos.x + this.alignment.stackx,
