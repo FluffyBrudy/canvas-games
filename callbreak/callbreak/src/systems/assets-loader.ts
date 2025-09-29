@@ -10,10 +10,10 @@ import { Rect } from "../core/rect";
 import type { Coor, PlayerAlignment } from "../types/types.type";
 
 export const SuitImages: Record<Suit, ImageObj> = {
-  [Suit.CLUB]: new ImageObj(clubsCard, 0.2),
-  [Suit.DIAMOND]: new ImageObj(diamondCard, 0.2),
-  [Suit.HEART]: new ImageObj(heartCard, 0.2),
-  [Suit.SPADE]: new ImageObj(spadeCard, 0.2),
+  [Suit.CLUB]: new ImageObj(clubsCard, 0.15),
+  [Suit.DIAMOND]: new ImageObj(diamondCard, 0.15),
+  [Suit.HEART]: new ImageObj(heartCard, 0.15),
+  [Suit.SPADE]: new ImageObj(spadeCard, 0.15),
 };
 
 export const profilePlaceholderImage = new ImageObj(profile);
@@ -30,26 +30,30 @@ export function getCardSize() {
 
 export function getCardAlignment() {
   const { w, h } = getCardSize();
-  const maxWOrH = ~~(Math.max(w, h) * 0.8);
-  const minWOrH = ~~(Math.min(w, h) * 0.8);
+  const maxWOrH = ~~Math.max(w, h);
+  const minWOrH = ~~Math.min(w, h);
+
+  const centerX = window.innerWidth / 2;
+  const midleftX = w * 12;
+  const midrightX = 2 * centerX - midleftX + w;
 
   const alignmentRectMap = {
     midbottom: new Rect(
       maxWOrH,
-      window.innerHeight - maxWOrH * 2,
+      window.innerHeight - maxWOrH * 3,
       window.innerWidth - 2 * maxWOrH,
       maxWOrH
     ),
-    midleft: new Rect(w, 0, w, window.innerHeight),
-    midright: new Rect(window.innerWidth - 2 * w, 0, w, window.innerHeight),
-    midtop: new Rect(w, maxWOrH, window.innerWidth - 2 * w, h),
+    midleft: new Rect(midleftX, 0, w, window.innerHeight),
+    midright: new Rect(midrightX, 0, w, window.innerHeight),
+    midtop: new Rect(w, maxWOrH * 2, window.innerWidth - 2 * w, h),
   };
 
   const stackAlignment: Record<keyof typeof alignmentRectMap, Coor> = {
-    midbottom: { x: minWOrH, y: 0 },
-    midleft: { x: 0, y: minWOrH },
-    midright: { x: 0, y: minWOrH },
-    midtop: { x: minWOrH, y: 0 },
+    midbottom: { x: ~~(minWOrH * 0.8), y: 0 },
+    midleft: { x: 0, y: ~~(minWOrH * 0.8) },
+    midright: { x: 0, y: ~~(minWOrH * 0.8) },
+    midtop: { x: ~~(minWOrH * 0.8), y: 0 },
   };
 
   return { alignmentRectMap, stackAlignment };

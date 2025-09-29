@@ -73,49 +73,50 @@ export class PlayerHandSprite extends Sprite {
     };
   }
   update(kwargs?: EventDepSpriteKwargs) {
+    if (!kwargs?.eventState || this.selectedCard) return;
+
+    const { leftPressed, mouseX, mouseY } = kwargs.eventState;
     const revealableCards = this.hand.chooseRevealableCards(
       kwargs?.leadingCard
     );
 
-    if (!kwargs?.eventState || this.selectedCard) return;
-    const { leftPressed, mouseX, mouseY } = kwargs.eventState;
+    for (const card of this.cardGroup.sprites()) {
+      if (revealableCards.includes(card.getModel())) {
+        card.setState(CardState.REVEALED);
+      } else if (card.getState() === CardState.REVEALED) {
+        card.setState(CardState.IDLE);
+      }
+    }
 
     let clickedCard: CardSprite | null = null;
-    for (let card of this.cardGroup.sprites()) {
+    for (const card of this.cardGroup.sprites()) {
       if (card.rect.collidepoint(mouseX, mouseY)) {
         clickedCard = card;
         break;
       }
     }
-    if (clickedCard) {
-      if (revealableCards.includes(clickedCard.getModel())) {
-        if (leftPressed && clickedCard) {
-          const pushOffDir: Record<PlayerAlignment, [number, number]> = {
-            midbottom: [0, 1],
-            midleft: [-1, 0],
-            midright: [1, 0],
-            midtop: [0, -1],
-          };
 
-          let [signx, signy] = pushOffDir[this.alignment.name];
-          this.selectedCard = clickedCard;
+    if (
+      leftPressed &&
+      clickedCard &&
+      revealableCards.includes(clickedCard.getModel())
+    ) {
+      const pushOffDir: Record<PlayerAlignment, [number, number]> = {
+        midbottom: [0, 1],
+        midleft: [-1, 0],
+        midright: [1, 0],
+        midtop: [0, -1],
+      };
+      const [signx, signy] = pushOffDir[this.alignment.name];
+      this.selectedCard = clickedCard;
 
-          this.selectedCard.setState(CardState.DRAW, {
-            x: window.innerWidth / 2 + this.selectedCard.rect.width * signx,
-            y: window.innerHeight / 2 + this.selectedCard.rect.height * signy,
-          });
-          for (const card of this.cardGroup.sprites()) {
-            if (card === this.selectedCard) continue;
-            card.setState(CardState.IDLE);
-          }
-        }
-      }
-    } else {
+      this.selectedCard.setState(CardState.DRAW, {
+        x: window.innerWidth / 2 + this.selectedCard.rect.width * signx,
+        y: window.innerHeight / 2 + this.selectedCard.rect.height * signy,
+      });
+
       for (const card of this.cardGroup.sprites()) {
-        if (revealableCards.includes(card.getModel())) {
-          if (card.getState() === CardState.IDLE)
-            card.setState(CardState.REVEALED);
-        }
+        if (card !== this.selectedCard) card.setState(CardState.IDLE);
       }
     }
   }

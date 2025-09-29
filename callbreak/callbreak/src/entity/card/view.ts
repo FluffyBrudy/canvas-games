@@ -66,6 +66,16 @@ export class CardSprite extends Sprite {
       this.rect.width,
       this.rect.height
     );
+    ctx.roundRect(
+      -this.rect.width / 2,
+      -this.rect.height / 2 - this.hoverOffset,
+      this.rect.width,
+      this.rect.height,
+      5
+    );
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
     ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
     ctx.textBaseline = "middle";
