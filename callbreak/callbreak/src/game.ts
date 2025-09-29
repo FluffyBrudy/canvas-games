@@ -20,13 +20,23 @@ export class Game {
 
   constructor(players: (PlayerHandSprite | AIHandSprite)[]) {
     this.players = players;
+
+    this.dealDeck();
+    this.labelPlayers();
+
+    this.currentPlayer = this.players[this.turn];
+  }
+
+  dealDeck() {
     while (!this.deck.isEmpty()) {
       for (let player of this.players) {
         const card = this.deck.draw();
         player.addCard(card);
       }
     }
-    this.currentPlayer = this.players[this.turn];
+  }
+
+  private labelPlayers() {
     for (let player of this.players) {
       this.labeledPlayers[player.getLable()] = player;
     }
@@ -38,13 +48,7 @@ export class Game {
     for (let player of this.players) player.selectedCard = null;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    for (let player of this.players) {
-      player.draw(ctx);
-    }
-  }
-
-  update(kwargs?: EventDepSpriteKwargs) {
+  private handleAI() {
     if (
       this.currentPlayer instanceof AIHandSprite &&
       !this.currentPlayer.selectedCard
@@ -54,52 +58,73 @@ export class Game {
         this.selectedCards.map((c) => c.getModel())
       );
     }
+  }
 
+  private updateCurrentPlayer(kwargs?: EventDepSpriteKwargs) {
     this.currentPlayer.update({
       ...kwargs,
       leadingCard: this.selectedCards[0]?.getModel(),
     });
+  }
 
+  private handleTurnRotation() {
     const selectedCard = this.currentPlayer.selectedCard;
     if (this.currentPlayer.isPlaced() && selectedCard) {
       this.selectedCards.push(selectedCard);
-
       this.turn = (this.turn + 1) % this.players.length;
       this.currentPlayer = this.players[this.turn];
     }
-
+  }
+  private collectRoundIfNeeded() {
     if (
-      this.selectedCards.length === this.players.length &&
-      !this.roundCollected
-    ) {
-      const roundCollectedCards: Record<string, CardModel> = {};
+      this.selectedCards.length !== this.players.length ||
+      this.roundCollected
+    )
+      return;
 
-      for (let player of this.players) {
-        /* REMAINDER: guard just to make ts happy */
-        if (player.selectedCard) {
-          roundCollectedCards[player.getLable()] =
-            player.selectedCard.getModel();
-        }
-      }
-      const winner = chooseSubroundWinner(
-        roundCollectedCards,
-        this.selectedCards[0].getModel()
-      );
-      this.roundCollected = true;
-      for (let player of this.players) {
-        player.collectSelectedCard(this.labeledPlayers[winner].rect.center);
+    const roundCollectedCards: Record<string, CardModel> = {};
+    for (let player of this.players) {
+      if (player.selectedCard) {
+        roundCollectedCards[player.getLable()] = player.selectedCard.getModel();
       }
     }
 
-    if (
-      this.selectedCards.length > 0 &&
-      this.selectedCards.every((c) => c.getState() === CardState.CLOSED)
-    ) {
-      this.emptyTable();
-    }
+    const winner = chooseSubroundWinner(
+      roundCollectedCards,
+      this.selectedCards[0].getModel()
+    );
+    this.roundCollected = true;
 
     for (let player of this.players) {
+      player.collectSelectedCard(this.labeledPlayers[winner].rect.center);
+    }
+  }
+
+  private cleanupClosedCards() {
+    if (this.selectedCards.length === 0) return;
+    if (this.selectedCards.every((c) => c.getState() === CardState.CLOSED)) {
+      this.emptyTable();
+    }
+  }
+
+  private animatePlayers() {
+    for (let player of this.players) {
       player.animate();
+    }
+  }
+
+  update(kwargs?: EventDepSpriteKwargs) {
+    this.handleAI();
+    this.updateCurrentPlayer(kwargs);
+    this.handleTurnRotation();
+    this.collectRoundIfNeeded();
+    this.cleanupClosedCards();
+    this.animatePlayers();
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    for (let player of this.players) {
+      player.draw(ctx);
     }
   }
 }
