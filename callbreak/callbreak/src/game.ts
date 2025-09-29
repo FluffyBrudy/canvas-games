@@ -40,7 +40,9 @@ export class Game {
 
   draw(ctx: CanvasRenderingContext2D) {
     for (let player of this.players) {
-      player.draw(ctx);
+      if (player === this.currentPlayer)
+        player.drawRevealableCard(ctx, this.selectedCards[0]?.getModel());
+      else player.draw(ctx);
     }
   }
 

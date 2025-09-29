@@ -10,7 +10,14 @@ import type { CardModel } from "../card/model";
 import { CardSprite } from "../card/view";
 import { Hand } from "./model";
 
+const scaleIncrement = 0.2;
 export class PlayerHandSprite extends Sprite {
+  private static hoverOffsetMap: Record<PlayerAlignment, Coor> = {
+    midbottom: { x: 0, y: scaleIncrement },
+    midtop: { x: 0, y: scaleIncrement },
+    midleft: { x: -scaleIncrement, y: 0 },
+    midright: { x: -scaleIncrement, y: 0 },
+  };
   private hand: Hand = new Hand(true, "player");
   private cardSpritesMap = new Map<CardModel, CardSprite>();
   private cardGroup = new Group<CardSprite>();
@@ -144,5 +151,22 @@ export class PlayerHandSprite extends Sprite {
 
   draw(ctx: CanvasRenderingContext2D): void {
     this.cardGroup.draw(ctx);
+  }
+
+  drawRevealableCard(ctx: CanvasRenderingContext2D, leadingCard: CardModel) {
+    const revealableCards = this.hand.chooseRevealableCards(leadingCard);
+    for (let card of this.cardGroup.sprites()) {
+      const cardModelIndex = revealableCards.indexOf(card.getModel());
+      console.log(cardModelIndex);
+      if (cardModelIndex !== -1)
+        this.cardSpritesMap
+          .get(revealableCards[cardModelIndex])
+          ?.draw(
+            ctx,
+            1 + scaleIncrement,
+            PlayerHandSprite.hoverOffsetMap[this.alignment.name]
+          );
+      else card.draw(ctx);
+    }
   }
 }

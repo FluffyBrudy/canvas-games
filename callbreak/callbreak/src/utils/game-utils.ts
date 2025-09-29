@@ -14,3 +14,7 @@ export function vecDirection(from: Coor, to: Coor): Coor {
   if (mag === 0) return { x: 0, y: 0 };
   return { x: dx / mag, y: dy / mag };
 }
+
+export function isEqual(a: number, b: number, epsilon = 0.00001) {
+  return Math.abs(a - b) < epsilon;
+}

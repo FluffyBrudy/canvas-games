@@ -44,7 +44,11 @@ export class CardSprite extends Sprite {
     return this.model;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(
+    ctx: CanvasRenderingContext2D,
+    scale = 1,
+    scaledOffset = { x: 0, y: 0 }
+  ) {
     ctx.beginPath();
     ctx.save();
 
@@ -61,10 +65,12 @@ export class CardSprite extends Sprite {
     ctx.rotate(this.angle);
     ctx.drawImage(
       this.image,
-      -this.rect.width / 2,
-      -this.rect.height / 2 - this.hoverOffset,
-      this.rect.width,
-      this.rect.height
+      -this.rect.width / 2 + scaledOffset.x * this.rect.width,
+      -this.rect.height / 2 -
+        this.hoverOffset +
+        scaledOffset.x * this.rect.height,
+      this.rect.width * scale,
+      this.rect.height * scale
     );
 
     ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
