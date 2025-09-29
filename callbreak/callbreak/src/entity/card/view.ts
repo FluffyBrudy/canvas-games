@@ -117,4 +117,13 @@ export class CardSprite extends Sprite {
       this.kill();
     }
   }
+
+  getAdjustedCoor() {
+    return new Rect(
+      this.rect.x,
+      this.rect.y + this.hoverOffset * -1,
+      this.rect.width,
+      this.rect.height
+    );
+  }
 }

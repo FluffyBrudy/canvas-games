@@ -90,7 +90,7 @@ export class PlayerHandSprite extends Sprite {
 
     let clickedCard: CardSprite | null = null;
     for (const card of this.cardGroup.sprites()) {
-      if (card.rect.collidepoint(mouseX, mouseY)) {
+      if (card.getAdjustedCoor().collidepoint(mouseX, mouseY)) {
         clickedCard = card;
         break;
       }

@@ -93,4 +93,13 @@ export class Rect {
   coordinate() {
     return { x: this.x, y: this.y };
   }
+
+  inflate(amountX: number, amountY: number) {
+    return new Rect(
+      this.x - amountX / 2,
+      this.y - amountY / 2,
+      this.width + amountX,
+      this.height + amountY
+    );
+  }
 }
