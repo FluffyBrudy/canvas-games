@@ -7,7 +7,7 @@ import spadeCard from "../assets/graphics/cards/spade.png";
 import profile from "/vite.svg";
 import { Suit } from "../constants";
 import { Rect } from "../core/rect";
-import type { Coor } from "../types/types.type";
+import type { Coor, PlayerAlignment } from "../types/types.type";
 
 export const SuitImages: Record<Suit, ImageObj> = {
   [Suit.CLUB]: new ImageObj(clubsCard, 0.2),
@@ -53,4 +53,22 @@ export function getCardAlignment() {
   };
 
   return { alignmentRectMap, stackAlignment };
+}
+
+export function getAlignment(alignment: PlayerAlignment) {
+  let angle = 0;
+  switch (alignment) {
+    case "midbottom":
+      angle = 0;
+      break;
+    case "midtop":
+      angle = Math.PI;
+      break;
+    case "midleft":
+      angle = Math.PI / 2;
+      break;
+    case "midright":
+      angle = -Math.PI / 2;
+  }
+  return angle;
 }

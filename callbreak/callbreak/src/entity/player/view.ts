@@ -1,6 +1,7 @@
 import { CardState, RANKLEN } from "../../constants";
 import { Rect } from "../../core/rect";
 import { Group, Sprite } from "../../core/sprite";
+import { getAlignment } from "../../systems/assets-loader";
 import type {
   Coor,
   EventDepSpriteKwargs,
@@ -185,21 +186,7 @@ export class AIHandSprite extends Sprite {
   }
 
   addCard(cardModel: CardModel) {
-    let angle = 0;
-    switch (this.alignment.name) {
-      case "midbottom":
-        angle = 0;
-        break;
-      case "midtop":
-        angle = Math.PI;
-        break;
-      case "midleft":
-        angle = Math.PI / 2;
-        break;
-      case "midright":
-        angle = -Math.PI / 2;
-    }
-
+    const angle = getAlignment(this.alignment.name);
     const sprite = new CardSprite(
       cardModel,
       this.cardPos.x,
