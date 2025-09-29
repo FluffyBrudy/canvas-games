@@ -3,22 +3,22 @@ import { chooseSubroundWinner } from "./core/rule";
 import type { CardModel } from "./entity/card/model";
 import type { CardSprite } from "./entity/card/view";
 import { Deck } from "./entity/deck/model";
-import { PlayerHandSprite } from "./entity/player/view";
+import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
 import type { EventDepSpriteKwargs } from "./types/types.type";
 
 export class Game {
-  private players: PlayerHandSprite[];
-  private labeledPlayers: Record<string, PlayerHandSprite> = {};
+  private players: (PlayerHandSprite | AIHandSprite)[];
+  private labeledPlayers: Record<string, PlayerHandSprite | AIHandSprite> = {};
   private deck = new Deck();
   private turn = 0;
   private roundCollected = false;
-  private currentPlayer: PlayerHandSprite;
+  private currentPlayer: PlayerHandSprite | AIHandSprite;
   /*
    * four selected cards
    */
   private selectedCards: CardSprite[] = [];
 
-  constructor(players: PlayerHandSprite[]) {
+  constructor(players: (PlayerHandSprite | AIHandSprite)[]) {
     this.players = players;
     while (!this.deck.isEmpty()) {
       for (let player of this.players) {
@@ -40,13 +40,25 @@ export class Game {
 
   draw(ctx: CanvasRenderingContext2D) {
     for (let player of this.players) {
-      if (player === this.currentPlayer)
+      if (player instanceof PlayerHandSprite && player === this.currentPlayer) {
         player.drawRevealableCard(ctx, this.selectedCards[0]?.getModel());
-      else player.draw(ctx);
+      } else {
+        player.draw(ctx);
+      }
     }
   }
 
   update(kwargs?: EventDepSpriteKwargs) {
+    if (
+      this.currentPlayer instanceof AIHandSprite &&
+      !this.currentPlayer.selectedCard
+    ) {
+      this.currentPlayer.revealCard(
+        this.selectedCards[0]?.getModel(),
+        this.selectedCards.map((c) => c.getModel())
+      );
+    }
+
     this.currentPlayer.update({
       ...kwargs,
       leadingCard: this.selectedCards[0]?.getModel(),
@@ -79,7 +91,7 @@ export class Game {
       );
       this.roundCollected = true;
       for (let player of this.players) {
-        player.collectSelectedCar(this.labeledPlayers[winner].rect.center);
+        player.collectSelectedCard(this.labeledPlayers[winner].rect.center);
       }
     }
 

@@ -1,9 +1,10 @@
 import "./style.css";
 import { CustomEvent } from "./core/event";
-import { PlayerHandSprite } from "./entity/player/view";
+import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
 import { getCardAlignment, preload } from "./systems/assets-loader";
 
 import { Game } from "./game";
+import { shuffle } from "./utils/game-utils";
 
 async function main() {
   const canvas = document.querySelector("canvas")!;
@@ -23,14 +24,22 @@ async function main() {
 
   const players = (
     Object.keys(alignmentRectMap) as Array<keyof typeof alignmentRectMap>
-  ).map(
-    (alignment) =>
-      new PlayerHandSprite(
+  ).map((alignment) => {
+    if (alignment === "midbottom") {
+      return new PlayerHandSprite(
         alignmentRectMap[alignment],
         alignment,
         stackAlignment[alignment]
-      )
-  );
+      );
+    } else {
+      return new AIHandSprite(
+        alignmentRectMap[alignment],
+        alignment,
+        stackAlignment[alignment]
+      );
+    }
+  });
+  shuffle(players);
 
   const game = new Game(players);
 

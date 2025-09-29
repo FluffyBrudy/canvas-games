@@ -8,16 +8,10 @@ import type {
 } from "../../types/types.type";
 import type { CardModel } from "../card/model";
 import { CardSprite } from "../card/view";
-import { Hand } from "./model";
+import { AIHand, Hand } from "./model";
 
 const scaleIncrement = 0.2;
 export class PlayerHandSprite extends Sprite {
-  private static hoverOffsetMap: Record<PlayerAlignment, Coor> = {
-    midbottom: { x: 0, y: scaleIncrement },
-    midtop: { x: 0, y: scaleIncrement },
-    midleft: { x: -scaleIncrement, y: 0 },
-    midright: { x: -scaleIncrement, y: 0 },
-  };
   private hand: Hand = new Hand(true, "player");
   private cardSpritesMap = new Map<CardModel, CardSprite>();
   private cardGroup = new Group<CardSprite>();
@@ -135,7 +129,7 @@ export class PlayerHandSprite extends Sprite {
     return this.selectedCard?.getState() === CardState.PLACED;
   }
 
-  collectSelectedCar(translationCoor: Coor) {
+  collectSelectedCard(translationCoor: Coor) {
     if (!this.selectedCard) return;
     if (
       this.selectedCard.getState() === CardState.CLOSED ||
@@ -157,16 +151,120 @@ export class PlayerHandSprite extends Sprite {
     const revealableCards = this.hand.chooseRevealableCards(leadingCard);
     for (let card of this.cardGroup.sprites()) {
       const cardModelIndex = revealableCards.indexOf(card.getModel());
-      console.log(cardModelIndex);
       if (cardModelIndex !== -1)
         this.cardSpritesMap
           .get(revealableCards[cardModelIndex])
-          ?.draw(
-            ctx,
-            1 + scaleIncrement,
-            PlayerHandSprite.hoverOffsetMap[this.alignment.name]
-          );
+          ?.draw(ctx, 1 + scaleIncrement, { x: 0, y: -scaleIncrement });
       else card.draw(ctx);
     }
+  }
+}
+
+export class AIHandSprite extends Sprite {
+  public hand: AIHand = new AIHand("ai");
+  private cardSpritesMap = new Map<CardModel, CardSprite>();
+  private cardGroup = new Group<CardSprite>();
+  public selectedCard: CardSprite | null = null;
+  private cardPos: Coor = { x: 0, y: 0 };
+  private alignment: { name: PlayerAlignment; stackx: number; stacky: number };
+
+  constructor(rect: Rect, alignmentName: PlayerAlignment, coor: Coor) {
+    super();
+    this.alignment = { name: alignmentName, stackx: coor.x, stacky: coor.y };
+    this.rect = rect;
+    this.cardPos.x =
+      this.rect.x +
+      (/midleft|midright/.test(alignmentName)
+        ? 0
+        : ~~((window.innerWidth - RANKLEN * coor.x) / 2));
+    this.cardPos.y =
+      this.rect.y +
+      (/midtop|midbottom/.test(alignmentName)
+        ? 0
+        : ~~((window.innerHeight - RANKLEN * coor.y) / 2));
+  }
+
+  addCard(cardModel: CardModel) {
+    let angle = 0;
+    switch (this.alignment.name) {
+      case "midbottom":
+        angle = 0;
+        break;
+      case "midtop":
+        angle = Math.PI;
+        break;
+      case "midleft":
+        angle = Math.PI / 2;
+        break;
+      case "midright":
+        angle = -Math.PI / 2;
+    }
+
+    const sprite = new CardSprite(
+      cardModel,
+      this.cardPos.x,
+      this.cardPos.y,
+      angle
+    );
+    this.cardSpritesMap.set(cardModel, sprite);
+    this.cardGroup.add(sprite);
+    this.hand.add(cardModel);
+
+    this.cardPos = {
+      x: this.cardPos.x + this.alignment.stackx,
+      y: this.cardPos.y + this.alignment.stacky,
+    };
+  }
+
+  revealCard(leadingCard?: CardModel, otherCards: Iterable<CardModel> = []) {
+    const chosen = this.hand.chooseRevealCard(leadingCard, otherCards);
+    const sprite = this.cardSpritesMap.get(chosen);
+    if (!sprite) return null;
+
+    this.selectedCard = sprite;
+
+    const pushOffDir: Record<PlayerAlignment, [number, number]> = {
+      midbottom: [0, 1],
+      midleft: [-1, 0],
+      midright: [1, 0],
+      midtop: [0, -1],
+    };
+    const [signx, signy] = pushOffDir[this.alignment.name];
+
+    this.selectedCard.setState(CardState.DRAW, {
+      x: window.innerWidth / 2 + this.selectedCard.rect.width * signx,
+      y: window.innerHeight / 2 + this.selectedCard.rect.height * signy,
+    });
+
+    return chosen;
+  }
+
+  animate() {
+    for (let card of this.cardGroup.sprites()) {
+      card.animate();
+    }
+  }
+
+  isPlaced() {
+    return this.selectedCard?.getState() === CardState.PLACED;
+  }
+
+  collectSelectedCard(translationCoor: Coor) {
+    if (!this.selectedCard) return;
+    if (
+      [CardState.CLOSED, CardState.COLLECTING].includes(
+        this.selectedCard.getState()
+      )
+    )
+      return;
+    this.selectedCard.setState(CardState.COLLECTING, translationCoor);
+  }
+
+  getLable() {
+    return this.hand.label;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    this.cardGroup.draw(ctx);
   }
 }
