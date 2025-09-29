@@ -31,7 +31,7 @@ export const RANKLEN = ~~(Object.keys(Rank).length / 2);
 
 export enum CardState {
   IDLE,
-  HOVERED,
+  REVEALED,
   DRAW,
   PLACED,
   COLLECTING,

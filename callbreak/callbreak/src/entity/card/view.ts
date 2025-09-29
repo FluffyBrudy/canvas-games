@@ -44,15 +44,11 @@ export class CardSprite extends Sprite {
     return this.model;
   }
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    scale = 1,
-    scaledOffset = { x: 0, y: 0 }
-  ) {
+  draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.save();
 
-    if (this.state === CardState.HOVERED) {
+    if (this.state === CardState.REVEALED) {
       this.hoverOffset = Math.min(
         this.hoverOffset + t * this.rect.width,
         this.rect.width
@@ -65,12 +61,10 @@ export class CardSprite extends Sprite {
     ctx.rotate(this.angle);
     ctx.drawImage(
       this.image,
-      -this.rect.width / 2 + scaledOffset.x * this.rect.width,
-      -this.rect.height / 2 -
-        this.hoverOffset +
-        scaledOffset.x * this.rect.height,
-      this.rect.width * scale,
-      this.rect.height * scale
+      -this.rect.width / 2,
+      -this.rect.height / 2 - this.hoverOffset,
+      this.rect.width,
+      this.rect.height
     );
 
     ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
@@ -102,7 +96,7 @@ export class CardSprite extends Sprite {
     if (this.state === CardState.COLLECTING) {
       this.rect.x = t * this.translationCoor.x + (1 - t) * this.rect.x;
       this.rect.y = t * this.translationCoor.y + (1 - t) * this.rect.y;
-      console.log(destReached(this.rect.coordinate(), this.translationCoor));
+
       if (destReached(this.rect.coordinate(), this.translationCoor)) {
         this.rect.x = this.translationCoor.x;
         this.rect.y = this.translationCoor.y;

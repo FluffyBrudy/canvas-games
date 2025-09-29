@@ -11,7 +11,6 @@ import type { CardModel } from "../card/model";
 import { CardSprite } from "../card/view";
 import { AIHand, Hand } from "./model";
 
-const scaleIncrement = 0.2;
 export class PlayerHandSprite extends Sprite {
   private hand: Hand = new Hand(true, "player");
   private cardSpritesMap = new Map<CardModel, CardSprite>();
@@ -25,7 +24,7 @@ export class PlayerHandSprite extends Sprite {
 
     this.alignment = { name: alignmentName, stackx: coor.x, stacky: coor.y };
     this.rect = rect;
-    console.log(RANKLEN * coor.x, RANKLEN * coor.y, RANKLEN, coor);
+
     this.cardPos.x =
       this.rect.x +
       (/midleft|midright/.test(alignmentName)
@@ -73,50 +72,51 @@ export class PlayerHandSprite extends Sprite {
       y: this.cardPos.y + this.alignment.stacky,
     };
   }
-
   update(kwargs?: EventDepSpriteKwargs) {
+    const revealableCards = this.hand.chooseRevealableCards(
+      kwargs?.leadingCard
+    );
+
     if (!kwargs?.eventState || this.selectedCard) return;
     const { leftPressed, mouseX, mouseY } = kwargs.eventState;
 
-    let hoveredCard: CardSprite | null = null;
+    let clickedCard: CardSprite | null = null;
     for (let card of this.cardGroup.sprites()) {
       if (card.rect.collidepoint(mouseX, mouseY)) {
-        hoveredCard = card;
+        clickedCard = card;
         break;
       }
     }
+    if (clickedCard) {
+      if (revealableCards.includes(clickedCard.getModel())) {
+        if (leftPressed && clickedCard) {
+          const pushOffDir: Record<PlayerAlignment, [number, number]> = {
+            midbottom: [0, 1],
+            midleft: [-1, 0],
+            midright: [1, 0],
+            midtop: [0, -1],
+          };
 
-    if (hoveredCard) {
-      const revealableCards = this.hand.chooseRevealableCards(
-        kwargs.leadingCard
-      );
-      if (!revealableCards.includes(hoveredCard.getModel())) return;
-    }
+          let [signx, signy] = pushOffDir[this.alignment.name];
+          this.selectedCard = clickedCard;
 
-    if (hoveredCard && this.selectedCard === null) {
-      hoveredCard.setState(CardState.HOVERED);
-    }
-    for (let card of this.cardGroup.sprites()) {
-      if (card !== hoveredCard && card.getState() === CardState.HOVERED) {
-        card.setState(CardState.IDLE);
+          this.selectedCard.setState(CardState.DRAW, {
+            x: window.innerWidth / 2 + this.selectedCard.rect.width * signx,
+            y: window.innerHeight / 2 + this.selectedCard.rect.height * signy,
+          });
+          for (const card of this.cardGroup.sprites()) {
+            if (card === this.selectedCard) continue;
+            card.setState(CardState.IDLE);
+          }
+        }
       }
-    }
-
-    if (leftPressed && hoveredCard) {
-      const pushOffDir: Record<PlayerAlignment, [number, number]> = {
-        midbottom: [0, 1],
-        midleft: [-1, 0],
-        midright: [1, 0],
-        midtop: [0, -1],
-      };
-
-      let [signx, signy] = pushOffDir[this.alignment.name];
-      this.selectedCard = hoveredCard;
-      this.hand.reveal(this.selectedCard.getModel());
-      this.selectedCard.setState(CardState.DRAW, {
-        x: window.innerWidth / 2 + this.selectedCard.rect.width * signx,
-        y: window.innerHeight / 2 + this.selectedCard.rect.height * signy,
-      });
+    } else {
+      for (const card of this.cardGroup.sprites()) {
+        if (revealableCards.includes(card.getModel())) {
+          if (card.getState() === CardState.IDLE)
+            card.setState(CardState.REVEALED);
+        }
+      }
     }
   }
 
@@ -146,18 +146,6 @@ export class PlayerHandSprite extends Sprite {
 
   draw(ctx: CanvasRenderingContext2D): void {
     this.cardGroup.draw(ctx);
-  }
-
-  drawRevealableCard(ctx: CanvasRenderingContext2D, leadingCard: CardModel) {
-    const revealableCards = this.hand.chooseRevealableCards(leadingCard);
-    for (let card of this.cardGroup.sprites()) {
-      const cardModelIndex = revealableCards.indexOf(card.getModel());
-      if (cardModelIndex !== -1)
-        this.cardSpritesMap
-          .get(revealableCards[cardModelIndex])
-          ?.draw(ctx, 1 + scaleIncrement, { x: 0, y: -scaleIncrement });
-      else card.draw(ctx);
-    }
   }
 }
 
