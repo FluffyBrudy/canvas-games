@@ -18,6 +18,8 @@ export class CardSprite extends Sprite {
   private translationCoor: Coor | null;
   private state: CardState = CardState.IDLE;
 
+  private hoverOffset = 0;
+
   constructor(cardModel: CardModel, x: number, y: number, rotate = 0) {
     super();
     this.angle = rotate;
@@ -47,17 +49,12 @@ export class CardSprite extends Sprite {
     ctx.save();
 
     if (this.state === CardState.HOVERED) {
-      ctx.strokeStyle = "gold";
-      ctx.lineWidth = 5;
-      ctx.shadowColor = "rgba(255, 215, 0, 0.8)";
-      ctx.shadowBlur = 15;
-      ctx.strokeRect(
-        this.rect.x,
-        this.rect.y,
-        this.rect.width,
-        this.rect.height
+      this.hoverOffset = Math.min(
+        this.hoverOffset + t * this.rect.width,
+        this.rect.width
       );
-      ctx.shadowBlur = 0;
+    } else {
+      this.hoverOffset = Math.max(this.hoverOffset - t * this.rect.width, 0);
     }
 
     ctx.translate(this.rect.center.x, this.rect.center.y);
@@ -65,7 +62,7 @@ export class CardSprite extends Sprite {
     ctx.drawImage(
       this.image,
       -this.rect.width / 2,
-      -this.rect.height / 2,
+      -this.rect.height / 2 - this.hoverOffset,
       this.rect.width,
       this.rect.height
     );
@@ -76,7 +73,7 @@ export class CardSprite extends Sprite {
     const text = this.model.rank.toString();
     const fontWidth = ctx.measureText(text).width;
 
-    ctx.fillText(text, ~~(-fontWidth / 2), 0);
+    ctx.fillText(text, ~~(-fontWidth / 2), -this.hoverOffset);
     ctx.restore();
     ctx.closePath();
   }

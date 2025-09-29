@@ -45,7 +45,10 @@ export class Game {
   }
 
   update(kwargs?: EventDepSpriteKwargs) {
-    this.currentPlayer.update(kwargs);
+    this.currentPlayer.update({
+      ...kwargs,
+      leadingCard: this.selectedCards[0]?.getModel(),
+    });
 
     const selectedCard = this.currentPlayer.selectedCard;
     if (this.currentPlayer.isPlaced() && selectedCard) {

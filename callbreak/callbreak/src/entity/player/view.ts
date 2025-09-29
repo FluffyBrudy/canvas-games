@@ -41,10 +41,21 @@ export class PlayerHandSprite extends Sprite {
   }
 
   addCard(cardModel: CardModel) {
-    const isAlignmentVerticle = ["midright", "midleft"].includes(
-      this.alignment.name
-    );
-    const angle = isAlignmentVerticle ? Math.PI * 0.5 : 0;
+    let angle = 0;
+    switch (this.alignment.name) {
+      case "midbottom":
+        angle = 0;
+        break;
+      case "midtop":
+        angle = Math.PI;
+        break;
+      case "midleft":
+        angle = Math.PI / 2;
+        break;
+      case "midright":
+        angle = -Math.PI / 2;
+    }
+
     const sprite = new CardSprite(
       cardModel,
       this.cardPos.x,
@@ -71,6 +82,13 @@ export class PlayerHandSprite extends Sprite {
         hoveredCard = card;
         break;
       }
+    }
+
+    if (hoveredCard) {
+      const revealableCards = this.hand.chooseRevealableCards(
+        kwargs.leadingCard
+      );
+      if (!revealableCards.includes(hoveredCard.getModel())) return;
     }
 
     if (hoveredCard && this.selectedCard === null) {
