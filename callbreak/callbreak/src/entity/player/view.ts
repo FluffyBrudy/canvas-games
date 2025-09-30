@@ -1,4 +1,4 @@
-import { CardState, RANKLEN } from "../../constants";
+import { CardState } from "../../constants";
 import { Rect } from "../../core/rect";
 import { Group, Sprite } from "../../core/sprite";
 import { getAlignment } from "../../systems/assets-loader";
@@ -19,22 +19,18 @@ export class PlayerHandSprite extends Sprite {
   private cardPos = { x: 0, y: 0 };
   private alignment: { name: PlayerAlignment; stackx: number; stacky: number };
 
-  constructor(rect: Rect, alignmentName: PlayerAlignment, coor: Coor) {
+  constructor(rect: Rect, alignmentName: PlayerAlignment, stackCoor: Coor) {
     super();
 
-    this.alignment = { name: alignmentName, stackx: coor.x, stacky: coor.y };
+    this.alignment = {
+      name: alignmentName,
+      stackx: stackCoor.x,
+      stacky: stackCoor.y,
+    };
     this.rect = rect;
 
-    this.cardPos.x =
-      this.rect.x +
-      (/midleft|midright/.test(alignmentName)
-        ? 0
-        : ~~((window.innerWidth - RANKLEN * coor.x) / 2));
-    this.cardPos.y =
-      this.rect.y +
-      (/midtop|midbottom/.test(alignmentName)
-        ? 0
-        : ~~((window.innerHeight - RANKLEN * coor.y) / 2));
+    this.cardPos.x = rect.x;
+    this.cardPos.y = rect.y;
   }
 
   getLable() {
@@ -42,21 +38,7 @@ export class PlayerHandSprite extends Sprite {
   }
 
   addCard(cardModel: CardModel) {
-    let angle = 0;
-    switch (this.alignment.name) {
-      case "midbottom":
-        angle = 0;
-        break;
-      case "midtop":
-        angle = Math.PI;
-        break;
-      case "midleft":
-        angle = Math.PI / 2;
-        break;
-      case "midright":
-        angle = -Math.PI / 2;
-    }
-
+    const angle = getAlignment(this.alignment.name);
     const sprite = new CardSprite(
       cardModel,
       this.cardPos.x,
@@ -158,20 +140,18 @@ export class AIHandSprite extends Sprite {
   private cardPos: Coor = { x: 0, y: 0 };
   private alignment: { name: PlayerAlignment; stackx: number; stacky: number };
 
-  constructor(rect: Rect, alignmentName: PlayerAlignment, coor: Coor) {
+  constructor(rect: Rect, alignmentName: PlayerAlignment, stackCoor: Coor) {
     super();
-    this.alignment = { name: alignmentName, stackx: coor.x, stacky: coor.y };
+
+    this.alignment = {
+      name: alignmentName,
+      stackx: stackCoor.x,
+      stacky: stackCoor.y,
+    };
     this.rect = rect;
-    this.cardPos.x =
-      this.rect.x +
-      (/midleft|midright/.test(alignmentName)
-        ? 0
-        : ~~((window.innerWidth - RANKLEN * coor.x) / 2));
-    this.cardPos.y =
-      this.rect.y +
-      (/midtop|midbottom/.test(alignmentName)
-        ? 0
-        : ~~((window.innerHeight - RANKLEN * coor.y) / 2));
+
+    this.cardPos.x = rect.x;
+    this.cardPos.y = rect.y;
   }
 
   addCard(cardModel: CardModel) {
