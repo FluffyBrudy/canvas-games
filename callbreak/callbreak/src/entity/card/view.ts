@@ -17,13 +17,21 @@ export class CardSprite extends Sprite {
 
   private translationCoor: Coor | null;
   private state: CardState = CardState.IDLE;
-
   private hoverOffset = 0;
 
-  constructor(cardModel: CardModel, x: number, y: number, rotate = 0) {
+  private defaultHidden: boolean; // <--- NEW
+
+  constructor(
+    cardModel: CardModel,
+    x: number,
+    y: number,
+    rotate = 0,
+    defaultHidden = false // <--- NEW param
+  ) {
     super();
     this.angle = rotate;
     this.model = cardModel;
+    this.defaultHidden = defaultHidden;
     this.image = SuitImages[cardModel.suit].image;
     this.rect = new Rect(x, y, this.image.width, this.image.height);
     this.translationCoor = { x, y };
@@ -48,42 +56,61 @@ export class CardSprite extends Sprite {
     ctx.beginPath();
     ctx.save();
 
-    if (this.state === CardState.REVEALED) {
-      this.hoverOffset = Math.min(
-        this.hoverOffset + t * this.rect.width,
-        this.rect.width
+    const isVisible = !this.defaultHidden || this.state !== CardState.IDLE;
+    if (isVisible) {
+      if (this.state === CardState.REVEALED) {
+        this.hoverOffset = Math.min(
+          this.hoverOffset + t * this.rect.width,
+          this.rect.width
+        );
+      } else {
+        this.hoverOffset = Math.max(this.hoverOffset - t * this.rect.width, 0);
+      }
+
+      ctx.translate(this.rect.center.x, this.rect.center.y);
+      ctx.rotate(this.angle);
+      ctx.drawImage(
+        this.image,
+        -this.rect.width / 2,
+        -this.rect.height / 2 - this.hoverOffset,
+        this.rect.width,
+        this.rect.height
       );
+      ctx.roundRect(
+        -this.rect.width / 2,
+        -this.rect.height / 2 - this.hoverOffset,
+        this.rect.width,
+        this.rect.height,
+        5
+      );
+      ctx.strokeStyle = "gray";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "black";
+      const text = this.model.rank.toString();
+      const fontWidth = ctx.measureText(text).width;
+
+      ctx.fillText(text, ~~(-fontWidth / 2), -this.hoverOffset);
     } else {
-      this.hoverOffset = Math.max(this.hoverOffset - t * this.rect.width, 0);
+      ctx.translate(this.rect.center.x, this.rect.center.y);
+      ctx.rotate(this.angle);
+      ctx.fillStyle = "darkblue";
+      ctx.roundRect(
+        -this.rect.width / 2,
+        -this.rect.height / 2,
+        this.rect.width,
+        this.rect.height,
+        5
+      );
+      ctx.fill();
+      ctx.strokeStyle = "gray";
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
 
-    ctx.translate(this.rect.center.x, this.rect.center.y);
-    ctx.rotate(this.angle);
-    ctx.drawImage(
-      this.image,
-      -this.rect.width / 2,
-      -this.rect.height / 2 - this.hoverOffset,
-      this.rect.width,
-      this.rect.height
-    );
-    ctx.roundRect(
-      -this.rect.width / 2,
-      -this.rect.height / 2 - this.hoverOffset,
-      this.rect.width,
-      this.rect.height,
-      5
-    );
-    ctx.strokeStyle = "gray";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "black";
-    const text = this.model.rank.toString();
-    const fontWidth = ctx.measureText(text).width;
-
-    ctx.fillText(text, ~~(-fontWidth / 2), -this.hoverOffset);
     ctx.restore();
     ctx.closePath();
   }

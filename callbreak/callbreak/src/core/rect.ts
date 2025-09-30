@@ -54,6 +54,11 @@ export class Rect {
     this.y = ~~(coor.y - this.height / 2);
   }
 
+  set topleft(coor: Coor) {
+    this.x = coor.x;
+    this.y = coor.y;
+  }
+
   scale(ratio: number) {
     return {
       w: ~~(this.width * ratio),

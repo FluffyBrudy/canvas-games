@@ -43,7 +43,8 @@ export class PlayerHandSprite extends Sprite {
       cardModel,
       this.cardPos.x,
       this.cardPos.y,
-      angle
+      angle,
+      this.alignment.name !== "midbottom"
     );
     this.cardSpritesMap.set(cardModel, sprite);
     this.cardGroup.add(sprite);
@@ -172,7 +173,8 @@ export class AIHandSprite extends Sprite {
       cardModel,
       this.cardPos.x,
       this.cardPos.y,
-      angle
+      angle,
+      true
     );
     this.cardSpritesMap.set(cardModel, sprite);
     this.cardGroup.add(sprite);
