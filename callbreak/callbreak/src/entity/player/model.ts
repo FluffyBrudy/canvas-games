@@ -70,6 +70,7 @@ export class AIHand extends Hand {
 
     if (!leadingCard) {
       const sorted = [...this.cards].sort((a, b) => a.rank - b.rank);
+      console.log(this.cards);
       card = this.omitAceIfPossible(sorted);
       return this.reveal(card);
     }

@@ -113,9 +113,6 @@ export class CardSprite extends Sprite {
         this.state = CardState.CLOSED;
       }
     }
-    if (this.state === CardState.CLOSED) {
-      this.kill();
-    }
   }
 
   getAdjustedCoor() {

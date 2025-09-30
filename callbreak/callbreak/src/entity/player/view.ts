@@ -127,6 +127,18 @@ export class PlayerHandSprite extends Sprite {
     return this.selectedCard === null;
   }
 
+  clearCard() {
+    if (this.selectedCard) {
+      const model = this.selectedCard.getModel();
+
+      this.hand.reveal(model);
+      this.cardSpritesMap.delete(model);
+      this.cardGroup.remove(this.selectedCard);
+
+      this.selectedCard = null;
+    }
+  }
+
   draw(ctx: CanvasRenderingContext2D): void {
     this.cardGroup.draw(ctx);
   }
@@ -218,6 +230,17 @@ export class AIHandSprite extends Sprite {
 
   getLable() {
     return this.hand.label;
+  }
+
+  clearCard() {
+    if (this.selectedCard) {
+      const model = this.selectedCard.getModel();
+
+      this.cardSpritesMap.delete(model);
+      this.cardGroup.remove(this.selectedCard);
+
+      this.selectedCard = null;
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {

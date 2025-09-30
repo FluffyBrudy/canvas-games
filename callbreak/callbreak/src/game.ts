@@ -45,7 +45,7 @@ export class Game {
   emptyTable() {
     this.selectedCards = [];
     this.roundCollected = false;
-    for (let player of this.players) player.selectedCard = null;
+    for (let player of this.players) player.clearCard();
   }
 
   private handleAI() {
