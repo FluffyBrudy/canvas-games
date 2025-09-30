@@ -1,6 +1,5 @@
 import { Suit, Rank, Precedence } from "../constants";
 import { CardModel } from "../entity/card/model";
-import type { PlayerHandSprite } from "../entity/player/view";
 
 export function compareValue(src: Rank, dest: Rank): boolean {
   return src > dest;
@@ -50,6 +49,6 @@ export function chooseSubroundWinner(
       winningCard = CardModel;
     }
   }
-
+  console.log(playerHands, winner, winningCard);
   return winner;
 }

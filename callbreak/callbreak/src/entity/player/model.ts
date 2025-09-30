@@ -8,7 +8,7 @@ function formatHand(cards: CardModel[]): string {
 }
 
 export class Hand {
-  private static count = 0;
+  protected static count = 0;
   public label: string;
   public isHuman: boolean;
   public cards: CardModel[];
@@ -59,7 +59,7 @@ export class Hand {
 
 export class AIHand extends Hand {
   constructor(label?: string) {
-    super(false, label);
+    super(false, (label || "ai") + AIHand.count);
   }
 
   chooseRevealCard(
