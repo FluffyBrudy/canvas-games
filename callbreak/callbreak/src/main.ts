@@ -14,6 +14,7 @@ async function main() {
   const resizeCallback = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    Game.background.resize(canvas.width, canvas.height);
   };
   window.addEventListener("load", resizeCallback, { once: true });
   window.addEventListener("resize", resizeCallback);
@@ -43,15 +44,15 @@ async function main() {
 
   const game = new Game(players);
 
-  const animate = () => {
+  const animate = (ts: number) => {
     const eventStateSnapshot = Object.freeze(event.getState());
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    game.update({ eventState: eventStateSnapshot });
+    game.update(ts, { eventState: eventStateSnapshot });
     game.draw(ctx);
     requestAnimationFrame(animate);
   };
 
-  animate();
+  requestAnimationFrame(animate);
 }
 
 main();

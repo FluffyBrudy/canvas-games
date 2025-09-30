@@ -5,6 +5,7 @@ import type { CardSprite } from "./entity/card/view";
 import { Deck } from "./entity/deck/model";
 import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
 import type { EventDepSpriteKwargs } from "./types/types.type";
+import { Background } from "./ui/background";
 
 export class Game {
   private players: (PlayerHandSprite | AIHandSprite)[];
@@ -13,10 +14,10 @@ export class Game {
   private turn = 0;
   private roundCollected = false;
   private currentPlayer: PlayerHandSprite | AIHandSprite;
-  /*
-   * four selected cards
-   */
   private selectedCards: CardSprite[] = [];
+
+  private time = 0;
+  public static background = new Background();
 
   constructor(players: (PlayerHandSprite | AIHandSprite)[]) {
     this.players = players;
@@ -113,7 +114,8 @@ export class Game {
     }
   }
 
-  update(kwargs?: EventDepSpriteKwargs) {
+  update(now: number, kwargs?: EventDepSpriteKwargs) {
+    this.time = now;
     this.handleAI();
     this.updateCurrentPlayer(kwargs);
     this.handleTurnRotation();
@@ -123,6 +125,7 @@ export class Game {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    Game.background.draw(ctx, this.time);
     for (let player of this.players) {
       player.draw(ctx);
     }
