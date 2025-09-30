@@ -11,15 +11,16 @@ export class Deck {
 
   private fullCards() {
     const cards: CardModel[] = [];
-    for (let suit of Object.values(Suit).filter((v) => typeof v === "string")) {
-      for (let rank of Object.values(Rank).filter(
-        (v) => typeof v === "number"
-      )) {
-        const r = rank as number;
-        cards.push(new CardModel(r, suit as Suit));
+    const allSuits: Suit[] = Object.values(Suit);
+    const allRanks: Rank[] = Object.values(Rank).filter(
+      (v): v is Rank => typeof v === "number"
+    );
+
+    for (const suit of allSuits) {
+      for (const rank of allRanks) {
+        cards.push(new CardModel(rank, suit));
       }
     }
-
     return cards;
   }
 
