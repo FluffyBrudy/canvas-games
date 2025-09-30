@@ -1,6 +1,5 @@
 import { Suit, Rank, Precedence } from "../constants";
 import { CardModel } from "../entity/card/model";
-import type { PlayerHandSprite } from "../entity/player/view";
 
 export function compareValue(src: Rank, dest: Rank): boolean {
   return src > dest;
@@ -28,7 +27,8 @@ export function compareCard(
   if (suitPrecedence === Precedence.EQUAL) {
     return compareValue(src.rank, target.rank);
   }
-  return suitPrecedence === Precedence.HIGHER;
+  if (suitPrecedence === Precedence.HIGHER) return true;
+  return false;
 }
 
 /**

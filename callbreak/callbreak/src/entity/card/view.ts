@@ -6,7 +6,6 @@ import type { Coor } from "../../types/types.type";
 import { destReached } from "../../utils/game-utils";
 import { CardState } from "../../constants";
 
-// this is  animatio duration used for linear interpolation
 const t = 0.1;
 
 export class CardSprite extends Sprite {
@@ -19,14 +18,14 @@ export class CardSprite extends Sprite {
   private state: CardState = CardState.IDLE;
   private hoverOffset = 0;
 
-  private defaultHidden: boolean; // <--- NEW
+  private defaultHidden: boolean;
 
   constructor(
     cardModel: CardModel,
     x: number,
     y: number,
     rotate = 0,
-    defaultHidden = false // <--- NEW param
+    defaultHidden = false
   ) {
     super();
     this.angle = rotate;
@@ -46,73 +45,111 @@ export class CardSprite extends Sprite {
     return this.state;
   }
 
-  update() {}
-
   getModel() {
     return this.model;
   }
 
+  update() {}
+
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.beginPath();
     ctx.save();
+    ctx.translate(this.rect.center.x, this.rect.center.y);
+    ctx.rotate(this.angle);
 
     const isVisible = !this.defaultHidden || this.state !== CardState.IDLE;
+
+    if (this.state === CardState.REVEALED) {
+      this.hoverOffset = Math.min(
+        this.hoverOffset + t * this.rect.width,
+        this.rect.width * 0.15
+      );
+    } else {
+      this.hoverOffset = Math.max(this.hoverOffset - t * this.rect.width, 0);
+    }
+
+    const cardX = -this.rect.width / 2;
+    const cardY = -this.rect.height / 2 - this.hoverOffset;
+
+    ctx.shadowColor = "rgba(0,0,0,0.3)";
+    ctx.shadowBlur = 12;
+    ctx.shadowOffsetY = 6;
+
     if (isVisible) {
-      if (this.state === CardState.REVEALED) {
-        this.hoverOffset = Math.min(
-          this.hoverOffset + t * this.rect.width,
-          this.rect.width
+      const bgGradient = ctx.createLinearGradient(
+        cardX,
+        cardY,
+        cardX,
+        cardY + this.rect.height
+      );
+      bgGradient.addColorStop(0, "#f9fafb");
+      bgGradient.addColorStop(1, "#e5e7eb");
+
+      ctx.fillStyle = bgGradient;
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, this.rect.width, this.rect.height, 8);
+      ctx.fill();
+
+      ctx.shadowColor = "transparent";
+
+      if (this.image.complete && this.image.naturalWidth > 0) {
+        ctx.drawImage(
+          this.image,
+          cardX,
+          cardY,
+          this.rect.width,
+          this.rect.height
         );
-      } else {
-        this.hoverOffset = Math.max(this.hoverOffset - t * this.rect.width, 0);
       }
 
-      ctx.translate(this.rect.center.x, this.rect.center.y);
-      ctx.rotate(this.angle);
-      ctx.drawImage(
-        this.image,
-        -this.rect.width / 2,
-        -this.rect.height / 2 - this.hoverOffset,
-        this.rect.width,
-        this.rect.height
-      );
-      ctx.roundRect(
-        -this.rect.width / 2,
-        -this.rect.height / 2 - this.hoverOffset,
-        this.rect.width,
-        this.rect.height,
-        5
-      );
-      ctx.strokeStyle = "gray";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = this.state === CardState.REVEALED ? 4 : 2;
+      ctx.strokeStyle =
+        this.state === CardState.REVEALED ? "#fbbf24" : "#9ca3af";
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, this.rect.width, this.rect.height, 8);
       ctx.stroke();
 
-      ctx.font = ~~(this.rect.height * 0.2) + "px monospace";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "black";
       const text = this.model.rank.toString();
-      const fontWidth = ctx.measureText(text).width;
-
-      ctx.fillText(text, ~~(-fontWidth / 2), -this.hoverOffset);
+      ctx.font = `bold ${~~(this.rect.height * 0.25)}px system-ui`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "white";
+      ctx.fillStyle = "black";
+      ctx.strokeText(text, 0, -this.hoverOffset);
+      ctx.fillText(text, 0, -this.hoverOffset);
     } else {
-      ctx.translate(this.rect.center.x, this.rect.center.y);
-      ctx.rotate(this.angle);
-      ctx.fillStyle = "darkblue";
-      ctx.roundRect(
-        -this.rect.width / 2,
-        -this.rect.height / 2,
-        this.rect.width,
-        this.rect.height,
-        5
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, this.rect.width, this.rect.height, 8);
+      const backGradient = ctx.createLinearGradient(
+        cardX,
+        cardY,
+        cardX + this.rect.width,
+        cardY + this.rect.height
       );
+      backGradient.addColorStop(0, "#1e3a8a");
+      backGradient.addColorStop(0.5, "#3b82f6");
+      backGradient.addColorStop(1, "#1e3a8a");
+      ctx.fillStyle = backGradient;
       ctx.fill();
-      ctx.strokeStyle = "gray";
-      ctx.lineWidth = 2;
+
+      ctx.shadowColor = "transparent";
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#60a5fa";
+      for (let i = cardX + 10; i < cardX + this.rect.width - 10; i += 12) {
+        ctx.beginPath();
+        ctx.moveTo(i, cardY + 10);
+        ctx.lineTo(i, cardY + this.rect.height - 10);
+        ctx.stroke();
+      }
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#1e40af";
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, this.rect.width, this.rect.height, 8);
       ctx.stroke();
     }
 
     ctx.restore();
-    ctx.closePath();
   }
 
   animate() {
@@ -122,18 +159,14 @@ export class CardSprite extends Sprite {
     this.rect.y = t * this.translationCoor.y + (1 - t) * this.rect.y;
 
     if (this.state === CardState.DRAW) {
-      this.rect.x = t * this.translationCoor.x + (1 - t) * this.rect.x;
-      this.rect.y = t * this.translationCoor.y + (1 - t) * this.rect.y;
       if (destReached(this.rect.coordinate(), this.translationCoor)) {
         this.rect.x = this.translationCoor.x;
         this.rect.y = this.translationCoor.y;
         this.state = CardState.PLACED;
       }
     }
-    if (this.state === CardState.COLLECTING) {
-      this.rect.x = t * this.translationCoor.x + (1 - t) * this.rect.x;
-      this.rect.y = t * this.translationCoor.y + (1 - t) * this.rect.y;
 
+    if (this.state === CardState.COLLECTING) {
       if (destReached(this.rect.coordinate(), this.translationCoor)) {
         this.rect.x = this.translationCoor.x;
         this.rect.y = this.translationCoor.y;
@@ -145,7 +178,7 @@ export class CardSprite extends Sprite {
   getAdjustedCoor() {
     return new Rect(
       this.rect.x,
-      this.rect.y + this.hoverOffset * -1,
+      this.rect.y - this.hoverOffset,
       this.rect.width,
       this.rect.height
     );

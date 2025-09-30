@@ -25,17 +25,17 @@ export function preload() {
 }
 
 export function getCardSize() {
-  return SuitImages.club.getSize();
+  return SuitImages[Suit.CLUB].getSize();
 }
+
 export function getCardAlignment() {
   const { w, h } = getCardSize();
   const maxWOrH = ~~Math.max(w, h);
   const minWOrH = ~~Math.min(w, h);
-  const stackSize = ~~(minWOrH * 0.8);
+  const stackSize = ~~(minWOrH * 0.9);
 
-  const centerX = window.innerWidth / 2;
-  const midleftX = w * 12;
-  const midrightX = 2 * centerX - midleftX + w;
+  const midleftX = w * 1.5;
+  const midrightX = window.innerWidth - w * 2.5;
 
   const stackAlignment: Record<PlayerAlignment, Coor> = {
     midbottom: { x: stackSize, y: 0 },
@@ -70,14 +70,14 @@ export function getCardAlignment() {
   const alignmentRectMap = {
     midbottom: makeRect(
       maxWOrH,
-      window.innerHeight - maxWOrH * 3,
+      window.innerHeight - maxWOrH * 2.5,
       window.innerWidth - 2 * maxWOrH,
       maxWOrH,
       "midbottom"
     ),
     midleft: makeRect(midleftX, 0, w, window.innerHeight, "midleft"),
     midright: makeRect(midrightX, 0, w, window.innerHeight, "midright"),
-    midtop: makeRect(w, maxWOrH * 2, window.innerWidth - 2 * w, h, "midtop"),
+    midtop: makeRect(w, maxWOrH * 2.5, window.innerWidth - 2 * w, h, "midtop"),
   };
 
   return { alignmentRectMap, stackAlignment };
