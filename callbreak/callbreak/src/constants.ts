@@ -27,8 +27,6 @@ export enum Precedence {
   LOWER = -1,
 }
 
-export const RANKLEN = ~~(Object.keys(Rank).length / 2);
-
 export enum CardState {
   IDLE,
   REVEALED,
@@ -37,3 +35,6 @@ export enum CardState {
   COLLECTING,
   CLOSED,
 }
+
+export const RANKLEN = ~~(Object.keys(Rank).length / 2);
+export const SUBROUNDS = 13;

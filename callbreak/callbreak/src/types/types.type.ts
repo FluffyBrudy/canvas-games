@@ -11,3 +11,6 @@ export type PlayerAlignment = "midtop" | "midleft" | "midbottom" | "midright";
 export type EventDepSpriteKwargs = Record<string, any> & {
   eventState?: InputState;
 };
+
+export type TPlayerLable = string;
+export type TBid = number;
