@@ -38,3 +38,4 @@ export enum CardState {
 
 export const RANKLEN = ~~(Object.keys(Rank).length / 2);
 export const SUBROUNDS = 13;
+export const ROUNDS = 4;

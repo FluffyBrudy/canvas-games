@@ -18,7 +18,6 @@ export class Button {
   update(eventState: InputState) {
     const { mouseX, mouseY, leftPressed } = eventState;
     this.hover = this.rect.collidepoint(mouseX, mouseY);
-
     if (this.hover && leftPressed) {
       this.onClick();
     }

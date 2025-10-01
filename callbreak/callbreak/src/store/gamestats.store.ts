@@ -1,9 +1,12 @@
 import { SUBROUNDS } from "../constants";
 import type { gameStats, GameStatsAttrs } from "../types/store.type";
 
-export const gameStatsStore: gameStats = {
+export const gameStatsStore: (playerCount: number) => gameStats = (
+  playersCount: number
+) => ({
   round: [],
   currentRound: -1,
+  totalPlayers: playersCount,
 
   initRound() {
     const newRound: GameStatsAttrs = {
@@ -36,4 +39,32 @@ export const gameStatsStore: gameStats = {
     }
     this.initRound();
   },
-};
+
+  addBid(playerLabel: string, bid: number) {
+    const r = this.round[this.currentRound];
+    r.bids[playerLabel] = bid;
+  },
+
+  isBiddingComplete(): boolean {
+    const r = this.round[this.currentRound];
+    return Object.keys(r.bids).length === this.totalPlayers;
+  },
+
+  makeBidding(label, bid) {
+    if (bid < 1 || bid > 13) new Error("invalid bid selection");
+    this.round[this.currentRound].bids[label] = bid;
+  },
+
+  getHighestBid(): { playerLabel: string; bid: number } | null {
+    const r = this.round[this.currentRound];
+    let max = -Infinity,
+      winner = null;
+    for (const [pid, bid] of Object.entries(r.bids)) {
+      if (bid > max) {
+        max = bid;
+        winner = pid;
+      }
+    }
+    return winner ? { playerLabel: winner, bid: max } : null;
+  },
+});

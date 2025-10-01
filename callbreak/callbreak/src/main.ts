@@ -1,54 +1,87 @@
 import "./style.css";
 import { CustomEvent } from "./core/event";
-import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
-import { getCardAlignment, preload } from "./systems/assets-loader";
-
+import { preload } from "./systems/assets-loader";
 import { Game } from "./game";
-import { shuffle } from "./utils/game-utils";
+import { initalizeDefaultPlayers } from "./systems/initial";
+import { Background } from "./ui/background";
+import { MenuUI } from "./ui/menu";
+import { BiddingUI } from "./ui/bidding";
+import { PlayerHandSprite } from "./entity/player/view";
+
+enum EUIMenus {
+  BACKGROUND = "background",
+  MAIN = "mainmenu",
+  GAME = "game",
+  BIDDING = "bidding",
+}
 
 async function main() {
+  await preload();
+
   const canvas = document.querySelector("canvas")!;
   const event = new CustomEvent(canvas);
   const ctx = canvas.getContext("2d")!;
 
+  const players = initalizeDefaultPlayers();
+  const game = new Game(players);
+
+  let currentContext: Omit<EUIMenus, EUIMenus.BACKGROUND> = EUIMenus.MAIN;
+
+  const UIMenus = {
+    [EUIMenus.BACKGROUND]: new Background(),
+    [EUIMenus.MAIN]: new MenuUI(canvas.width, canvas.height, () => {
+      currentContext = EUIMenus.GAME;
+    }),
+    [EUIMenus.BIDDING]: new BiddingUI(
+      canvas.width / 4,
+      canvas.height / 4,
+      (bid) => {
+        const current = game.getCurrentBiddingPlayer();
+        if (current) {
+          game.addBid(current.getLable(), bid);
+          game.advanceBiddingTurn();
+        }
+      }
+    ),
+  };
+
   const resizeCallback = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    Game.background.resize(canvas.width, canvas.height);
+    Object.values(UIMenus).forEach((ui) =>
+      ui.resize(canvas.width, canvas.height)
+    );
   };
+  resizeCallback();
   window.addEventListener("load", resizeCallback, { once: true });
   window.addEventListener("resize", resizeCallback);
 
-  await preload();
-
-  const { alignmentRectMap, stackAlignment } = getCardAlignment();
-
-  const players = (
-    Object.keys(alignmentRectMap) as Array<keyof typeof alignmentRectMap>
-  ).map((alignment) => {
-    if (alignment === "midbottom") {
-      return new PlayerHandSprite(
-        alignmentRectMap[alignment],
-        alignment,
-        stackAlignment[alignment]
-      );
-    } else {
-      return new AIHandSprite(
-        alignmentRectMap[alignment],
-        alignment,
-        stackAlignment[alignment]
-      );
-    }
-  });
-  shuffle(players);
-
-  const game = new Game(players);
-
   const animate = (ts: number) => {
-    const eventStateSnapshot = Object.freeze(event.getState());
+    const eventStateSnapshot = { eventState: Object.freeze(event.getState()) };
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    game.update(ts, { eventState: eventStateSnapshot });
-    game.draw(ctx);
+
+    UIMenus[EUIMenus.BACKGROUND].draw(ctx, ts);
+    if (currentContext === EUIMenus.GAME) {
+      game.draw(ctx);
+      if (game.isBiddingComplete()) {
+        game.update(ts, eventStateSnapshot);
+      } else {
+        const currentBidder = game.getCurrentBiddingPlayer();
+
+        if (currentBidder instanceof PlayerHandSprite) {
+          const context = UIMenus[EUIMenus.BIDDING];
+          context.update(eventStateSnapshot);
+          context.draw(ctx, currentBidder.getLable());
+        } else {
+          game.update(ts, eventStateSnapshot);
+        }
+      }
+    } else if (currentContext === EUIMenus.MAIN) {
+      const context = UIMenus[EUIMenus.MAIN];
+      context.update(eventStateSnapshot);
+      context.draw(ctx);
+    }
+
     requestAnimationFrame(animate);
   };
 

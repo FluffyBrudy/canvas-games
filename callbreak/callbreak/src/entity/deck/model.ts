@@ -2,11 +2,10 @@ import { Rank, Suit } from "../../constants";
 import { CardModel } from "../card/model";
 
 export class Deck {
-  private cards: CardModel[];
+  private cards: CardModel[] = [];
 
   constructor() {
-    this.cards = this.fullCards();
-    this.shuffle();
+    this.fullCards();
   }
 
   private fullCards() {
@@ -21,7 +20,9 @@ export class Deck {
         cards.push(new CardModel(rank, suit));
       }
     }
-    return cards;
+
+    this.cards = cards;
+    this.shuffle();
   }
 
   /**

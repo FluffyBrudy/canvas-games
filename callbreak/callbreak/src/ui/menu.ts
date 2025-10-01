@@ -29,6 +29,15 @@ export class MenuUI {
     this.startButton.update(kwargs.eventState);
   }
 
+  resize(width: number, height: number) {
+    this.startButton.rect = new Rect(
+      width / 2 - 120,
+      height / 2 + 40,
+      Math.min(240, width / 7),
+      Math.max(60, height / 14)
+    );
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
     if (!this.visible) return;
 
