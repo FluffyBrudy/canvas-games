@@ -3,6 +3,7 @@ import type { TBid, TPlayerLable } from "./types.type";
 
 export interface GameStatsAttrs {
   bids: Record<TPlayerLable, TBid>;
+  completedBids: Record<TPlayerLable, TBid>;
   winner: null | PlayerHandSprite | AIHandSprite;
   subroundWinner: TPlayerLable[];
 }

@@ -11,6 +11,7 @@ export const gameStatsStore: (playerCount: number) => gameStats = (
   initRound() {
     const newRound: GameStatsAttrs = {
       bids: {},
+      completedBids: {},
       winner: null,
       subroundWinner: [],
     };
@@ -21,6 +22,10 @@ export const gameStatsStore: (playerCount: number) => gameStats = (
   addSubroundWinner(winner) {
     const r = this.round[this.currentRound];
     r.subroundWinner.push(winner);
+    if (!(winner in r.completedBids)) {
+      r.completedBids[winner] = 0;
+    }
+    r.completedBids[winner]++;
   },
 
   isSubroundCompleted(): boolean {

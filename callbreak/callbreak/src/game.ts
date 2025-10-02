@@ -5,7 +5,8 @@ import type { CardSprite } from "./entity/card/view";
 import { Deck } from "./entity/deck/model";
 import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
 import { gameStatsStore } from "./store/gamestats.store";
-import type { EventDepSpriteKwargs, PlayerAlignment } from "./types/types.type";
+import { anchors } from "./systems/alignments";
+import type { EventDepSpriteKwargs } from "./types/types.type";
 import { drawText } from "./utils/draw-utils";
 
 export class Game {
@@ -166,12 +167,6 @@ export class Game {
 
   drawBidding(ctx: CanvasRenderingContext2D) {
     const bids = Object.entries(this.gameStats.getBid());
-    const anchors: Record<PlayerAlignment, [number, number]> = {
-      midbottom: [0, 40],
-      midtop: [0, -40],
-      midleft: [-40, 0],
-      midright: [50, 0],
-    };
 
     for (const [playerLabel, bid] of bids) {
       const text = `${playerLabel}: ${bid}`;
