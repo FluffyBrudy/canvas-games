@@ -13,6 +13,7 @@ import { AIHand, Hand } from "./model";
 
 export class PlayerHandSprite extends Sprite {
   public alignment: { name: PlayerAlignment; stackx: number; stacky: number };
+  private _initPos: Coor;
   private hand: Hand = new Hand(true, "player");
   private cardSpritesMap = new Map<CardModel, CardSprite>();
   private cardGroup = new Group<CardSprite>();
@@ -22,15 +23,30 @@ export class PlayerHandSprite extends Sprite {
   constructor(rect: Rect, alignmentName: PlayerAlignment, stackCoor: Coor) {
     super();
 
+    this._initPos = { x: rect.x, y: rect.y };
+
     this.alignment = {
       name: alignmentName,
       stackx: stackCoor.x,
       stacky: stackCoor.y,
     };
-    this.rect = rect;
 
+    this.rect = rect;
     this.cardPos.x = rect.x;
     this.cardPos.y = rect.y;
+  }
+
+  reset() {
+    if (this.hand.cards.length !== 0) {
+      alert("bug(Player)");
+      console.log(this.hand);
+      throw Error("hand must be empty");
+    }
+    this.cardSpritesMap = new Map();
+    this.cardGroup = new Group<CardSprite>();
+    this.selectedCard = null;
+    this.cardPos.x = this._initPos.x;
+    this.cardPos.y = this._initPos.y;
   }
 
   getLable() {
@@ -146,6 +162,7 @@ export class PlayerHandSprite extends Sprite {
 }
 
 export class AIHandSprite extends Sprite {
+  private _initPos: Coor;
   public hand: AIHand = new AIHand("ai");
   private cardSpritesMap = new Map<CardModel, CardSprite>();
   private cardGroup = new Group<CardSprite>();
@@ -156,6 +173,8 @@ export class AIHandSprite extends Sprite {
   constructor(rect: Rect, alignmentName: PlayerAlignment, stackCoor: Coor) {
     super();
 
+    this._initPos = { x: rect.x, y: rect.y };
+
     this.alignment = {
       name: alignmentName,
       stackx: stackCoor.x,
@@ -165,6 +184,18 @@ export class AIHandSprite extends Sprite {
 
     this.cardPos.x = rect.x;
     this.cardPos.y = rect.y;
+  }
+
+  reset() {
+    this.cardSpritesMap = new Map();
+    if (this.hand.cards.length !== 0) {
+      alert("bug");
+      throw Error("hand must be empty");
+    }
+    this.cardGroup = new Group<CardSprite>();
+    this.selectedCard = null;
+    this.cardPos.x = this._initPos.x;
+    this.cardPos.y = this._initPos.y;
   }
 
   addCard(cardModel: CardModel) {

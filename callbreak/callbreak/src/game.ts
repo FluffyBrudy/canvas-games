@@ -126,20 +126,34 @@ export class Game {
   }
 
   advanceBiddingTurn() {
-    this.biddingTurn++;
+    this.biddingTurn = (this.biddingTurn + 1) % this.players.length;
   }
 
   dealDeck() {
+    this.deck.fullCards();
+    for (const player of this.players) {
+      player.reset();
+    }
+
     while (!this.deck.isEmpty()) {
       for (let player of this.players) {
         const card = this.deck.draw();
         player.addCard(card);
       }
     }
+
+    this.labelPlayers();
   }
 
   isBiddingComplete() {
     return this.gameStats.isBiddingComplete();
+  }
+
+  isSubroundComplete() {
+    return (
+      this.gameStats.isSubroundCompleted() &&
+      this.currentPlayer.selectedCard === null
+    );
   }
 
   emptyTable() {
@@ -154,8 +168,9 @@ export class Game {
       return;
     }
 
-    if (this.gameStats.isSubroundCompleted()) {
-      return;
+    if (this.isSubroundComplete()) {
+      this.dealDeck();
+      this.gameStats.initRound();
     }
     this.handleAI();
     this.updateCurrentPlayer(kwargs);

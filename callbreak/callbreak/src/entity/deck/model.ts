@@ -8,7 +8,7 @@ export class Deck {
     this.fullCards();
   }
 
-  private fullCards() {
+  fullCards() {
     const cards: CardModel[] = [];
     const allSuits: Suit[] = Object.values(Suit);
     const allRanks: Rank[] = Object.values(Rank).filter(
