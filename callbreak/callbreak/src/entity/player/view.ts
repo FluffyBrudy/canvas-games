@@ -12,12 +12,12 @@ import { CardSprite } from "../card/view";
 import { AIHand, Hand } from "./model";
 
 export class PlayerHandSprite extends Sprite {
+  public alignment: { name: PlayerAlignment; stackx: number; stacky: number };
   private hand: Hand = new Hand(true, "player");
   private cardSpritesMap = new Map<CardModel, CardSprite>();
   private cardGroup = new Group<CardSprite>();
   public selectedCard: CardSprite | null = null;
   private cardPos = { x: 0, y: 0 };
-  private alignment: { name: PlayerAlignment; stackx: number; stacky: number };
 
   constructor(rect: Rect, alignmentName: PlayerAlignment, stackCoor: Coor) {
     super();
@@ -151,7 +151,7 @@ export class AIHandSprite extends Sprite {
   private cardGroup = new Group<CardSprite>();
   public selectedCard: CardSprite | null = null;
   private cardPos: Coor = { x: 0, y: 0 };
-  private alignment: { name: PlayerAlignment; stackx: number; stacky: number };
+  public alignment: { name: PlayerAlignment; stackx: number; stacky: number };
 
   constructor(rect: Rect, alignmentName: PlayerAlignment, stackCoor: Coor) {
     super();

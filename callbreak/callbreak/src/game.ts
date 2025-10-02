@@ -5,7 +5,8 @@ import type { CardSprite } from "./entity/card/view";
 import { Deck } from "./entity/deck/model";
 import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
 import { gameStatsStore } from "./store/gamestats.store";
-import type { EventDepSpriteKwargs } from "./types/types.type";
+import type { EventDepSpriteKwargs, PlayerAlignment } from "./types/types.type";
+import { drawText } from "./utils/draw-utils";
 
 export class Game {
   private players: (PlayerHandSprite | AIHandSprite)[];
@@ -17,7 +18,6 @@ export class Game {
   private roundCollected = false;
   private currentPlayer: PlayerHandSprite | AIHandSprite;
   private selectedCards: CardSprite[] = [];
-
   private gameStats: ReturnType<typeof gameStatsStore>;
 
   constructor(players: (PlayerHandSprite | AIHandSprite)[]) {
@@ -164,7 +164,26 @@ export class Game {
     this.animatePlayers();
   }
 
+  drawBidding(ctx: CanvasRenderingContext2D) {
+    const bids = Object.entries(this.gameStats.getBid());
+    const anchors: Record<PlayerAlignment, [number, number]> = {
+      midbottom: [0, 40],
+      midtop: [0, -40],
+      midleft: [-40, 0],
+      midright: [50, 0],
+    };
+
+    for (const [playerLabel, bid] of bids) {
+      const text = `${playerLabel}: ${bid}`;
+      const player = this.labeledPlayers[playerLabel];
+      const alignment = player.alignment.name;
+      const { x, y } = player.rect[alignment];
+      drawText(ctx, text, x, y, ...anchors[alignment]);
+    }
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
+    this.drawBidding(ctx);
     for (let player of this.players) {
       player.draw(ctx);
     }

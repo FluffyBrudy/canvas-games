@@ -45,6 +45,10 @@ export const gameStatsStore: (playerCount: number) => gameStats = (
     r.bids[playerLabel] = bid;
   },
 
+  getBid() {
+    return this.round[this.currentRound].bids;
+  },
+
   isBiddingComplete(): boolean {
     const r = this.round[this.currentRound];
     return Object.keys(r.bids).length === this.totalPlayers;

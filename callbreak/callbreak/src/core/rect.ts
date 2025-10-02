@@ -13,13 +13,66 @@ export class Rect {
     this.height = h;
   }
 
-  get center(): Coor {
-    return {
-      x: this.x + Math.round(this.width / 2),
-      y: this.y + Math.round(this.height / 2),
-    };
+  get topright(): Coor {
+    return { x: this.right, y: this.top };
+  }
+  set topright(coor: Coor) {
+    this.right = coor.x;
+    this.y = coor.y;
   }
 
+  get bottomleft(): Coor {
+    return { x: this.left, y: this.bottom };
+  }
+  set bottomleft(coor: Coor) {
+    this.x = coor.x;
+    this.bottom = coor.y;
+  }
+
+  get bottomright(): Coor {
+    return { x: this.right, y: this.bottom };
+  }
+  set bottomright(coor: Coor) {
+    this.right = coor.x;
+    this.bottom = coor.y;
+  }
+
+  get midleft(): Coor {
+    return { x: this.left, y: this.centery };
+  }
+  set midleft(coor: Coor) {
+    this.left = coor.x;
+    this.centery = coor.y;
+  }
+
+  get midright(): Coor {
+    return { x: this.right, y: this.centery };
+  }
+  set midright(coor: Coor) {
+    this.right = coor.x;
+    this.centery = coor.y;
+  }
+
+  get midtop(): Coor {
+    return { x: this.centerx, y: this.top };
+  }
+  set midtop(coor: Coor) {
+    this.centerx = coor.x;
+    this.top = coor.y;
+  }
+
+  get center(): Coor {
+    return {
+      x: this.centerx,
+      y: this.centery,
+    };
+  }
+  get midbottom(): Coor {
+    return {
+      x: this.centerx,
+      y: this.bottom,
+    };
+  }
   get left() {
     return this.x;
   }
@@ -31,6 +84,14 @@ export class Rect {
   }
   get bottom() {
     return this.y + this.height;
+  }
+
+  get centerx() {
+    return this.x + Math.round(this.width / 2);
+  }
+
+  get centery() {
+    return this.y + Math.round(this.height / 2);
   }
 
   set left(x: number) {
@@ -49,14 +110,27 @@ export class Rect {
     this.y = ~~(y - this.height);
   }
 
+  set centerx(x: number) {
+    this.x = ~~(x - this.width / 2);
+  }
+
+  set centery(y: number) {
+    this.y = ~~(y - this.height / 2);
+  }
+
   set center(coor: Coor) {
-    this.x = ~~(coor.x - this.width / 2);
-    this.y = ~~(coor.y - this.height / 2);
+    this.centerx = coor.x;
+    this.centery = coor.y;
   }
 
   set topleft(coor: Coor) {
     this.x = coor.x;
     this.y = coor.y;
+  }
+
+  set midbottom(coor: Coor) {
+    this.centerx = coor.x;
+    this.bottom = coor.y;
   }
 
   scale(ratio: number) {
