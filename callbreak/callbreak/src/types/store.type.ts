@@ -15,7 +15,10 @@ export interface gameStats {
   totalPlayers: number;
   initRound: () => void;
   addBid(playerId: string, bid: number): void;
-  getBid: () => Record<TPlayerLable, TBid>;
+  getBid: () => {
+    bids: Record<TPlayerLable, TBid>;
+    completedBids: Record<TPlayerLable, TBid>;
+  };
   addSubroundWinner: (winner: TPlayerLable) => void;
   isBiddingComplete: () => boolean;
   isSubroundCompleted: () => boolean;

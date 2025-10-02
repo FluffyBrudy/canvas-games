@@ -1,11 +1,11 @@
-import { CardState } from "./constants";
+import { CardState, DEFAULT_FONT_SIZE } from "./constants";
 import { chooseSubroundWinner } from "./core/rule";
 import type { CardModel } from "./entity/card/model";
 import type { CardSprite } from "./entity/card/view";
 import { Deck } from "./entity/deck/model";
 import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
 import { gameStatsStore } from "./store/gamestats.store";
-import { anchors } from "./systems/alignments";
+import { anchors, textAlignmentMap } from "./systems/alignments";
 import type { EventDepSpriteKwargs } from "./types/types.type";
 import { drawText } from "./utils/draw-utils";
 
@@ -166,14 +166,30 @@ export class Game {
   }
 
   drawBidding(ctx: CanvasRenderingContext2D) {
-    const bids = Object.entries(this.gameStats.getBid());
-
-    for (const [playerLabel, bid] of bids) {
-      const text = `${playerLabel}: ${bid}`;
+    const { bids, completedBids } = this.gameStats.getBid();
+    for (const [playerLabel, bid] of Object.entries(bids)) {
+      const madeBid = bid;
+      const completedBid = completedBids[playerLabel] || 0;
+      const text = `${playerLabel}: ${completedBid} / ${madeBid}`;
       const player = this.labeledPlayers[playerLabel];
       const alignment = player.alignment.name;
       const { x, y } = player.rect[alignment];
-      drawText(ctx, text, x, y, ...anchors[alignment]);
+      const [dx, dy] = anchors[alignment];
+      const [textAlign, textBaseline] = textAlignmentMap[alignment];
+      const { width: textW } = ctx.measureText(text);
+
+      drawText(
+        ctx,
+        text,
+        x,
+        y,
+        dx * textW,
+        dy * DEFAULT_FONT_SIZE,
+        DEFAULT_FONT_SIZE,
+        "rgba(255,255,255,0.5)",
+        textAlign,
+        textBaseline
+      );
     }
   }
 

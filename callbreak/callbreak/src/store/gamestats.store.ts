@@ -51,7 +51,8 @@ export const gameStatsStore: (playerCount: number) => gameStats = (
   },
 
   getBid() {
-    return this.round[this.currentRound].bids;
+    const { bids, completedBids } = this.round[this.currentRound];
+    return { bids, completedBids };
   },
 
   isBiddingComplete(): boolean {
