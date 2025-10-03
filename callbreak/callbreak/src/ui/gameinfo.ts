@@ -2,12 +2,15 @@ import { gameStatsStore } from "../store/gamestats.store";
 
 export class StatsUI {
   container: HTMLDivElement;
+  private lastStateHash = "";
+  private callback?: () => void;
 
-  constructor() {
+  constructor(callback?: () => void) {
     this.container = document.createElement("div");
     this.container.id = "stats-ui";
     this.container.style.display = "none";
     document.body.appendChild(this.container);
+    this.callback = callback;
   }
 
   resize(_width: number, _height: number) {}
@@ -16,8 +19,17 @@ export class StatsUI {
     const round = store.round[store.currentRound];
     if (!round) return;
 
-    let html = `<h3>Round ${store.currentRound + 1}</h3>`;
-    html += `
+    const stateHash = JSON.stringify(store.round);
+    if (stateHash === this.lastStateHash) return;
+    this.lastStateHash = stateHash;
+
+    let html = `
+      <button id="stats-close" style="
+        position:absolute;top:8px;right:8px;
+        background:#c00;color:#fff;border:none;
+        border-radius:4px;padding:4px 8px;
+        cursor:pointer;">✖</button>
+      <h3>Round ${store.currentRound + 1}</h3>
       <table>
         <thead>
           <tr>
@@ -39,8 +51,7 @@ export class StatsUI {
       `;
     }
 
-    html += `</tbody>
-             </table>`;
+    html += `</tbody></table>`;
 
     const { totals, winner } = store.calculateRoundResult();
     html += `
@@ -69,6 +80,17 @@ export class StatsUI {
     `;
 
     this.container.innerHTML = html;
+
+    const closeBtn =
+      this.container.querySelector<HTMLButtonElement>("#stats-close");
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        if (store.round.length < store.maxRounds && this.callback) {
+          this.callback();
+        }
+        this.hide();
+      };
+    }
   }
 
   show() {

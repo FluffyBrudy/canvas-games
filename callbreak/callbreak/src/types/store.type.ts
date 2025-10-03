@@ -8,6 +8,7 @@ export interface GameStatsAttrs {
 export type BidEntity = { playerLabel: TPlayerLable; bid: TBid };
 
 export interface gameStats {
+  maxRounds: number;
   round: GameStatsAttrs[];
   currentRound: number;
   totalPlayers: number;

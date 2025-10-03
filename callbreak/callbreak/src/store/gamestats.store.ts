@@ -2,10 +2,12 @@ import { SUBROUNDS } from "../constants";
 import type { gameStats, GameStatsAttrs } from "../types/store.type";
 import type { TBid, TPlayerLable } from "../types/types.type";
 
-export const gameStatsStore: (playerCount: number) => gameStats = (
-  playersCount: number
-) => ({
+export const gameStatsStore: (
+  playerCount: number,
+  maxRounds: number
+) => gameStats = (playersCount: number, maxRounds: number) => ({
   round: [],
+  maxRounds: maxRounds,
   currentRound: -1,
   totalPlayers: playersCount,
 
