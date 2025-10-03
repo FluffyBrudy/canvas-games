@@ -7,12 +7,14 @@ import { Background } from "./ui/background";
 import { MenuUI } from "./ui/menu";
 import { BiddingUI } from "./ui/bidding";
 import { PlayerHandSprite } from "./entity/player/view";
+import { StatsUI } from "./ui/gameinfo";
 
 enum EUIMenus {
   BACKGROUND = "background",
   MAIN = "mainmenu",
   GAME = "game",
   BIDDING = "bidding",
+  STATS = "stats",
 }
 
 async function main() {
@@ -43,6 +45,7 @@ async function main() {
         }
       }
     ),
+    [EUIMenus.STATS]: new StatsUI(),
   };
 
   const resizeCallback = () => {
@@ -61,7 +64,8 @@ async function main() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     UIMenus[EUIMenus.BACKGROUND].draw(ctx, ts);
-    if (currentContext === EUIMenus.GAME) {
+
+    if (!game.areRoundsComplete() && currentContext === EUIMenus.GAME) {
       game.draw(ctx);
       if (game.isBiddingComplete()) {
         game.update(ts, eventStateSnapshot);
@@ -80,6 +84,10 @@ async function main() {
       const context = UIMenus[EUIMenus.MAIN];
       context.update(eventStateSnapshot);
       context.draw(ctx);
+    } else if (game.areRoundsComplete()) {
+      const context = UIMenus[EUIMenus.STATS];
+      context.show();
+      context.render(game.getStats());
     }
 
     requestAnimationFrame(animate);
