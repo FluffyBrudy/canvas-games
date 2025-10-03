@@ -86,6 +86,7 @@ export class StatsUI {
     if (closeBtn) {
       closeBtn.onclick = () => {
         if (store.round.length < store.maxRounds && this.callback) {
+          console.log("meowuu");
           this.callback();
         }
         this.hide();

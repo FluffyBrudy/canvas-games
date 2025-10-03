@@ -173,16 +173,19 @@ export class Game {
     for (let player of this.players) player.clearCard();
   }
 
+  proceedNextRound() {
+    if (this.isSubroundComplete()) {
+      this.dealDeck();
+      this.gameStats.initRound();
+    }
+  }
+
   update(_now: number, kwargs?: EventDepSpriteKwargs) {
     if (!this.isBiddingComplete()) {
       this.handleBidding();
       return;
     }
 
-    if (this.isSubroundComplete()) {
-      this.dealDeck();
-      this.gameStats.initRound();
-    }
     this.handleAI();
     this.updateCurrentPlayer(kwargs);
     this.handleTurnRotation();

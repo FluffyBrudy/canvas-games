@@ -45,7 +45,7 @@ async function main() {
         }
       }
     ),
-    [EUIMenus.STATS]: new StatsUI(),
+    [EUIMenus.STATS]: new StatsUI(() => game.proceedNextRound()),
   };
 
   const resizeCallback = () => {
@@ -65,7 +65,11 @@ async function main() {
 
     UIMenus[EUIMenus.BACKGROUND].draw(ctx, ts);
 
-    if (!game.areRoundsComplete() && currentContext === EUIMenus.GAME) {
+    if (
+      !game.areRoundsComplete() &&
+      !game.isSubroundComplete() &&
+      currentContext === EUIMenus.GAME
+    ) {
       game.draw(ctx);
       if (game.isBiddingComplete()) {
         game.update(ts, eventStateSnapshot);
@@ -84,7 +88,7 @@ async function main() {
       const context = UIMenus[EUIMenus.MAIN];
       context.update(eventStateSnapshot);
       context.draw(ctx);
-    } else if (game.areRoundsComplete()) {
+    } else if (game.areRoundsComplete() || game.isSubroundComplete()) {
       const context = UIMenus[EUIMenus.STATS];
       context.show();
       context.render(game.getStats());
