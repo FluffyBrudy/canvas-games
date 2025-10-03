@@ -1,4 +1,4 @@
-import { CardState, DEFAULT_FONT_SIZE } from "./constants";
+import { CardState, DEFAULT_FONT_SIZE, ROUNDS } from "./constants";
 import { chooseSubroundWinner } from "./core/rule";
 import type { CardModel } from "./entity/card/model";
 import type { CardSprite } from "./entity/card/view";
@@ -117,6 +117,10 @@ export class Game {
     }
   }
 
+  getStats() {
+    return this.gameStats;
+  }
+
   getCurrentBiddingPlayer() {
     return this.isBiddingComplete() ? null : this.players[this.biddingTurn];
   }
@@ -153,6 +157,13 @@ export class Game {
     return (
       this.gameStats.isSubroundCompleted() &&
       this.currentPlayer.selectedCard === null
+    );
+  }
+
+  areRoundsComplete() {
+    return (
+      this.gameStats.round.length === ROUNDS &&
+      this.gameStats.isSubroundCompleted()
     );
   }
 
