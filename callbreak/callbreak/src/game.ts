@@ -1,4 +1,5 @@
 import { CardState, DEFAULT_FONT_SIZE, ROUNDS } from "./constants";
+import { calcRegularTakes } from "./core/ai-bit-algo";
 import { chooseSubroundWinner } from "./core/rule";
 import type { CardModel } from "./entity/card/model";
 import type { CardSprite } from "./entity/card/view";
@@ -111,8 +112,8 @@ export class Game {
     const current = this.players[this.biddingTurn];
 
     if (current instanceof AIHandSprite) {
-      const randomBid = Math.floor(Math.random() * 13) + 1;
-      this.gameStats.addBid(current.getLable(), randomBid);
+      const bidDecision = calcRegularTakes(current.hand.cards);
+      this.gameStats.addBid(current.getLable(), bidDecision);
       this.advanceBiddingTurn();
     }
   }
