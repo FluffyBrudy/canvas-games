@@ -23,7 +23,7 @@ export class Game {
 
   constructor(players: (PlayerHandSprite | AIHandSprite)[]) {
     this.players = players;
-    this.gameStats = gameStatsStore(this.players.length);
+    this.gameStats = gameStatsStore(this.players.length, ROUNDS);
 
     this.gameStats.initRound();
     this.dealDeck();
