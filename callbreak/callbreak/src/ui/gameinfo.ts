@@ -88,6 +88,10 @@ export class StatsUI {
         if (store.round.length < store.maxRounds && this.callback) {
           console.log("meowuu");
           this.callback();
+        } else {
+          alert(
+            "All rounds completed. I havent add replay feature please reload browser window. If u can contribute PR would be appreciated. Thanks for reading."
+          );
         }
         this.hide();
       };
