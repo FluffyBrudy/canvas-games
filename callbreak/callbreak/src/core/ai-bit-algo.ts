@@ -22,15 +22,16 @@ const PT = {
   },
 };
 
-export function calcRegularTakes(hand: CardModel[]) {
-  let score = 0;
+export function calcBids(cards: CardModel[]) {
+  let score = 0.0;
 
-  for (const card of hand) {
+  for (const card of cards) {
     if (card.suit === Suit.SPADE) {
       if (card.rank === Rank.ACE) score += PT.spade.ACE;
       else if (card.rank === Rank.KING) score += PT.spade.KING;
       else if (card.rank === Rank.QUEEN) score += PT.spade.QUEEN;
-      else if (card.rank >= Rank.TEN) score += PT.spade.TEN;
+      else if (card.rank === Rank.JACK) score += PT.spade.JACK;
+      else if (card.rank === Rank.TEN) score += PT.spade.TEN;
       else score += PT.spade.LOW;
     } else {
       if (card.rank === Rank.ACE) score += PT.offsuit.ACE;
@@ -39,23 +40,19 @@ export function calcRegularTakes(hand: CardModel[]) {
     }
   }
 
-  const suitGroups: Record<Suit, CardModel[]> = {
+  const suitGroup: Record<Suit, CardModel[]> = {
     [Suit.SPADE]: [],
+    [Suit.DIAMOND]: [],
     [Suit.CLUB]: [],
     [Suit.HEART]: [],
-    [Suit.DIAMOND]: [],
   };
 
-  for (const card of hand) {
-    suitGroups[card.suit].push(card);
-  }
-
-  if (suitGroups[Suit.SPADE].length >= 5) {
+  if (suitGroup.spade.length >= 5) {
     score += PT.bonuses.longSpade;
   }
 
-  for (const suit of [Suit.CLUB, Suit.HEART, Suit.DIAMOND]) {
-    if (suitGroups[suit].length <= 2) {
+  for (const suit of [Suit.CLUB, Suit.DIAMOND, Suit.HEART]) {
+    if (suitGroup[suit].length <= 2) {
       score += PT.bonuses.shortSuit;
     }
   }
