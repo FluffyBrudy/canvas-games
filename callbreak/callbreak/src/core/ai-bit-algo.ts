@@ -14,6 +14,7 @@ const PT = {
     ACE: 0.8,
     KING: 0.6,
     QUEEN: 0.4,
+    JACK: 0.3,
     LOW: 0.0,
   },
   bonuses: {
@@ -61,5 +62,5 @@ export function calcBids(cards: CardModel[]) {
     }
   }
 
-  return Math.max(1, Math.floor(score));
+  return Math.max(1, Math.round(score));
 }

@@ -90,7 +90,7 @@ export function getAlignment(alignment: PlayerAlignment) {
       angle = 0;
       break;
     case "midtop":
-      angle = Math.PI;
+      angle = 0;
       break;
     case "midleft":
       angle = Math.PI / 2;
