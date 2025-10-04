@@ -42,10 +42,14 @@ export function calcBids(cards: CardModel[]) {
 
   const suitGroup: Record<Suit, CardModel[]> = {
     [Suit.SPADE]: [],
-    [Suit.DIAMOND]: [],
     [Suit.CLUB]: [],
+    [Suit.DIAMOND]: [],
     [Suit.HEART]: [],
   };
+
+  for (const card of cards) {
+    suitGroup[card.suit].push(card);
+  }
 
   if (suitGroup.spade.length >= 5) {
     score += PT.bonuses.longSpade;
