@@ -6,7 +6,7 @@ import type { Coor } from "../../types/types.type";
 import { destReached } from "../../utils/game-utils";
 import { CardState } from "../../constants";
 
-const t = 1;
+const t = 0.3;
 
 export class CardSprite extends Sprite {
   image: HTMLImageElement;

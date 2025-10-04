@@ -91,6 +91,10 @@ export class Game {
     }
 
     this.gameStats.addSubroundWinner(winner);
+
+    const winnerIndex = this.players.findIndex((p) => p.getLable() === winner);
+    this.turn = winnerIndex;
+    this.currentPlayer = this.players[this.turn];
   }
 
   private cleanupClosedCards() {
