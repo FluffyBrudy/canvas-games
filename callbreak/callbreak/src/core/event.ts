@@ -10,9 +10,8 @@ export class CustomEvent {
   };
 
   constructor(canvas: HTMLCanvasElement) {
-    canvas.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-    });
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
     canvas.addEventListener("mousemove", (e) => {
       this.state.mouseX = e.offsetX;
       this.state.mouseY = e.offsetY;
@@ -27,17 +26,41 @@ export class CustomEvent {
       if (e.button === 0) this.state.leftPressed = false;
       if (e.button === 2) this.state.rightPressed = false;
     });
-    window.addEventListener("keydown", (e) => {
-      if (!this.state.keysDown.has(e.key)) {
-        this.state.keysDown.add(e.key.toLocaleLowerCase());
-      }
+
+    canvas.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      this.state.mouseX = touch.clientX - rect.left;
+      this.state.mouseY = touch.clientY - rect.top;
+      this.state.leftPressed = true;
     });
-    window.addEventListener("keyup", (e) =>
-      this.state.keysDown.delete(e.key.toLocaleLowerCase())
-    );
+
+    canvas.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      this.state.mouseX = touch.clientX - rect.left;
+      this.state.mouseY = touch.clientY - rect.top;
+    });
+
+    canvas.addEventListener("touchend", () => {
+      this.state.leftPressed = false;
+    });
+
+    window.addEventListener("keydown", (e) => {
+      this.state.keysDown.add(e.key.toLocaleLowerCase());
+    });
+
+    window.addEventListener("keyup", (e) => {
+      this.state.keysDown.delete(e.key.toLocaleLowerCase());
+    });
   }
 
   getState() {
-    return { ...this.state };
+    return {
+      ...this.state,
+      keysDown: new Set(this.state.keysDown),
+    };
   }
 }
