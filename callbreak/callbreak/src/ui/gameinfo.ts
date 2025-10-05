@@ -23,61 +23,46 @@ export class StatsUI {
     if (stateHash === this.lastStateHash) return;
     this.lastStateHash = stateHash;
 
+    const { totals, winner } = store.calculateRoundResult();
+
     let html = `
-      <button id="stats-close" style="
-        position:absolute;top:8px;right:8px;
-        background:#c00;color:#fff;border:none;
-        border-radius:4px;padding:4px 8px;
-        cursor:pointer;">✖</button>
-      <h3>Round ${store.currentRound + 1}</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Bid</th>
-            <th>Completed</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
+    <button id="stats-close" class="stats-close">✖</button>
+    <h3>Round ${store.currentRound + 1}</h3>
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Bid</th>
+          <th>Completed</th>
+          <th>Round Score</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
 
     for (const player of Object.keys(round.bids)) {
+      const bid = round.bids[player];
+      const completed = round.completedBids[player] ?? 0;
+      const total = totals[player] ?? 0;
+      const isWinner = winner === player;
+
       html += `
-        <tr>
-          <td>${player}</td>
-          <td>${round.bids[player]}</td>
-          <td>${round.completedBids[player] ?? 0}</td>
-        </tr>
-      `;
+      <tr class="${isWinner ? "leader" : ""}">
+        <td>${player}</td>
+        <td>${bid}</td>
+        <td>${completed}</td>
+        <td>${completed - bid}</td>
+        <td>${total.toFixed(1)}</td>
+      </tr>
+    `;
     }
 
-    html += `</tbody></table>`;
-
-    const { totals, winner } = store.calculateRoundResult();
     html += `
-      <h4>Cumulative Totals</h4>
-      <table>
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Total Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${Object.entries(totals)
-            .map(
-              ([player, score]) => `
-            <tr>
-              <td>${player}</td>
-              <td>${score.toFixed(1)}</td>
-            </tr>
-          `
-            )
-            .join("")}
-        </tbody>
-      </table>
-      <p><strong>Overall Winner:</strong> ${winner ?? "TBD"}</p>
-    `;
+      </tbody>
+    </table>
+    <p><strong>Overall Winner:</strong> ${winner ?? "TBD"}</p>
+  `;
 
     this.container.innerHTML = html;
 
@@ -86,11 +71,10 @@ export class StatsUI {
     if (closeBtn) {
       closeBtn.onclick = () => {
         if (store.round.length < store.maxRounds && this.callback) {
-          console.log("meowuu");
           this.callback();
         } else {
           alert(
-            "All rounds completed. I havent add replay feature please reload browser window. If u can contribute PR would be appreciated. Thanks for reading."
+            "All rounds completed. Replay feature not implemented yet — please reload window."
           );
         }
         this.hide();
