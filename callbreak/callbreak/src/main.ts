@@ -2,7 +2,7 @@ import "./style.css";
 import { CustomEvent } from "./core/event";
 import { preload } from "./systems/assets-loader";
 import { Game } from "./game";
-import { initalizeDefaultPlayers } from "./systems/initial";
+import { initializeDefaultPlayers } from "./systems/initial";
 import { Background } from "./ui/background";
 import { MenuUI } from "./ui/menu";
 import { BiddingUI } from "./ui/bidding";
@@ -24,7 +24,7 @@ async function main() {
   const event = new CustomEvent(canvas);
   const ctx = canvas.getContext("2d")!;
 
-  const players = initalizeDefaultPlayers();
+  const players = initializeDefaultPlayers();
   const game = new Game(players);
 
   let currentContext: Omit<EUIMenus, EUIMenus.BACKGROUND> = EUIMenus.MAIN;
