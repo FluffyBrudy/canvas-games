@@ -68,7 +68,7 @@ export function getCardAlignment(canvasWidth?: number, canvasHeight?: number) {
     ),
 
     midright: new Rect(
-      width - w - horizontalMargin,
+      width - 2 * w - horizontalMargin,
       (height - handHeight) / 2,
       w,
       handHeight
