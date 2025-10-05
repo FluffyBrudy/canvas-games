@@ -4,11 +4,12 @@ import { chooseSubroundWinner } from "./core/rule";
 import type { CardModel } from "./entity/card/model";
 import type { CardSprite } from "./entity/card/view";
 import { Deck } from "./entity/deck/model";
-import { AIHandSprite, PlayerHandSprite } from "./entity/player/view";
+import { AIHandSprite, type PlayerHandSprite } from "./entity/player/view";
 import { gameStatsStore } from "./store/gamestats.store";
 import { anchors, textAlignmentMap } from "./systems/alignments";
 import type { EventDepSpriteKwargs } from "./types/types.type";
 import { drawText } from "./utils/draw-utils";
+import { getCardAlignment } from "./systems/assets-loader";
 
 export class Game {
   private players: (PlayerHandSprite | AIHandSprite)[];
@@ -34,7 +35,7 @@ export class Game {
   }
 
   private labelPlayers() {
-    for (let player of this.players) {
+    for (const player of this.players) {
       this.labeledPlayers[player.getLable()] = player;
     }
   }
@@ -66,6 +67,7 @@ export class Game {
       this.currentPlayer = this.players[this.turn];
     }
   }
+
   private collectRoundIfNeeded() {
     if (
       this.selectedCards.length !== this.players.length ||
@@ -74,7 +76,7 @@ export class Game {
       return;
 
     const roundCollectedCards: Record<string, CardModel> = {};
-    for (let player of this.players) {
+    for (const player of this.players) {
       if (player.selectedCard) {
         roundCollectedCards[player.getLable()] = player.selectedCard.getModel();
       }
@@ -86,7 +88,7 @@ export class Game {
     );
     this.roundCollected = true;
 
-    for (let player of this.players) {
+    for (const player of this.players) {
       player.collectSelectedCard(this.labeledPlayers[winner].rect.center);
     }
 
@@ -105,7 +107,7 @@ export class Game {
   }
 
   private animatePlayers() {
-    for (let player of this.players) {
+    for (const player of this.players) {
       player.animate();
     }
   }
@@ -145,7 +147,7 @@ export class Game {
     }
 
     while (!this.deck.isEmpty()) {
-      for (let player of this.players) {
+      for (const player of this.players) {
         const card = this.deck.draw();
         player.addCard(card);
       }
@@ -175,7 +177,7 @@ export class Game {
   emptyTable() {
     this.selectedCards = [];
     this.roundCollected = false;
-    for (let player of this.players) player.clearCard();
+    for (const player of this.players) player.clearCard();
   }
 
   proceedNextRound() {
@@ -229,8 +231,20 @@ export class Game {
 
   draw(ctx: CanvasRenderingContext2D) {
     this.drawBidding(ctx);
-    for (let player of this.players) {
+    for (const player of this.players) {
       player.draw(ctx);
+    }
+  }
+
+  resize() {
+    const { alignmentRectMap, stackAlignment } = getCardAlignment(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+    for (const player of this.players) {
+      const alignment = player.alignment.name;
+      player.resize(alignmentRectMap[alignment], stackAlignment[alignment]);
     }
   }
 }

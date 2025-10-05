@@ -27,57 +27,52 @@ export function preload() {
 export function getCardSize() {
   return SuitImages.club.getSize();
 }
-export function getCardAlignment() {
-  const { w, h } = getCardSize();
-  const maxWOrH = ~~Math.max(w, h);
-  const minWOrH = ~~Math.min(w, h);
-  const stackSize = ~~(minWOrH * 0.8);
 
-  const centerX = window.innerWidth / 2;
-  const midleftX = w * 12;
-  const midrightX = 2 * centerX - midleftX + w;
+export function getCardAlignment(canvasWidth?: number, canvasHeight?: number) {
+  const width = canvasWidth || window.innerWidth;
+  const height = canvasHeight || window.innerHeight;
+
+  const { w, h } = getCardSize();
+
+  const isSmallScreen = width < 768;
+  const cardSpacing = isSmallScreen ? w * 0.6 : w * 0.8;
+
+  const handWidth = RANKLEN * cardSpacing;
+  const handHeight = RANKLEN * cardSpacing;
+
+  const horizontalMargin = width * 0.05;
+  const verticalMargin = height * 0.08;
 
   const stackAlignment: Record<PlayerAlignment, Coor> = {
-    midbottom: { x: stackSize, y: 0 },
-    midleft: { x: 0, y: stackSize },
-    midright: { x: 0, y: stackSize },
-    midtop: { x: stackSize, y: 0 },
+    midbottom: { x: cardSpacing, y: 0 },
+    midleft: { x: 0, y: cardSpacing },
+    midright: { x: 0, y: cardSpacing },
+    midtop: { x: cardSpacing, y: 0 },
   };
 
-  const makeRect = (
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    align: PlayerAlignment
-  ) => {
-    const rect = new Rect(x, y, width, height);
-    if (align === "midbottom" || align === "midtop") {
-      rect.x += ~~((window.innerWidth - RANKLEN * stackAlignment[align].x) / 2);
-      rect.width = RANKLEN * stackSize;
-      rect.height = h;
-    } else {
-      rect.y += ~~(
-        (window.innerHeight - RANKLEN * stackAlignment[align].y) /
-        2
-      );
-      rect.width = w;
-      rect.height = RANKLEN * stackSize;
-    }
-    return rect;
-  };
-
-  const alignmentRectMap = {
-    midbottom: makeRect(
-      maxWOrH,
-      window.innerHeight - maxWOrH * 3,
-      window.innerWidth - 2 * maxWOrH,
-      maxWOrH,
-      "midbottom"
+  const alignmentRectMap: Record<PlayerAlignment, Rect> = {
+    midbottom: new Rect(
+      (width - handWidth) / 2,
+      height - h - verticalMargin,
+      handWidth,
+      h
     ),
-    midleft: makeRect(midleftX, 0, w, window.innerHeight, "midleft"),
-    midright: makeRect(midrightX, 0, w, window.innerHeight, "midright"),
-    midtop: makeRect(w, maxWOrH * 2, window.innerWidth - 2 * w, h, "midtop"),
+
+    midtop: new Rect((width - handWidth) / 2, verticalMargin, handWidth, h),
+
+    midleft: new Rect(
+      horizontalMargin,
+      (height - handHeight) / 2,
+      w,
+      handHeight
+    ),
+
+    midright: new Rect(
+      width - w - horizontalMargin,
+      (height - handHeight) / 2,
+      w,
+      handHeight
+    ),
   };
 
   return { alignmentRectMap, stackAlignment };

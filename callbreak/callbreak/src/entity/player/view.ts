@@ -1,5 +1,5 @@
 import { CardState } from "../../constants";
-import { Rect } from "../../core/rect";
+import type { Rect } from "../../core/rect";
 import { Group, Sprite } from "../../core/sprite";
 import { getAlignment } from "../../systems/assets-loader";
 import type {
@@ -34,6 +34,24 @@ export class PlayerHandSprite extends Sprite {
     this.rect = rect;
     this.cardPos.x = rect.x;
     this.cardPos.y = rect.y;
+  }
+
+  resize(newRect: Rect, stackCoor: Coor) {
+    this.rect = newRect;
+    this._initPos = { x: newRect.x, y: newRect.y };
+
+    this.alignment.stackx = stackCoor.x;
+    this.alignment.stacky = stackCoor.y;
+
+    let cardIndex = 0;
+    for (const card of this.cardGroup.sprites()) {
+      card.rect.x = newRect.x + cardIndex * stackCoor.x;
+      card.rect.y = newRect.y + cardIndex * stackCoor.y;
+      cardIndex++;
+    }
+
+    this.cardPos.x = newRect.x + cardIndex * stackCoor.x;
+    this.cardPos.y = newRect.y + cardIndex * stackCoor.y;
   }
 
   reset() {
@@ -71,6 +89,7 @@ export class PlayerHandSprite extends Sprite {
       y: this.cardPos.y + this.alignment.stacky,
     };
   }
+
   update(kwargs?: EventDepSpriteKwargs) {
     if (!kwargs?.eventState || this.selectedCard) return;
 
@@ -121,7 +140,7 @@ export class PlayerHandSprite extends Sprite {
   }
 
   animate() {
-    for (let card of this.cardGroup.sprites()) {
+    for (const card of this.cardGroup.sprites()) {
       card.animate();
     }
   }
@@ -186,6 +205,24 @@ export class AIHandSprite extends Sprite {
     this.cardPos.y = rect.y;
   }
 
+  resize(newRect: Rect, stackCoor: Coor) {
+    this.rect = newRect;
+    this._initPos = { x: newRect.x, y: newRect.y };
+
+    this.alignment.stackx = stackCoor.x;
+    this.alignment.stacky = stackCoor.y;
+
+    let cardIndex = 0;
+    for (const card of this.cardGroup.sprites()) {
+      card.rect.x = newRect.x + cardIndex * stackCoor.x;
+      card.rect.y = newRect.y + cardIndex * stackCoor.y;
+      cardIndex++;
+    }
+
+    this.cardPos.x = newRect.x + cardIndex * stackCoor.x;
+    this.cardPos.y = newRect.y + cardIndex * stackCoor.y;
+  }
+
   reset() {
     this.cardSpritesMap = new Map();
     if (this.hand.cards.length !== 0) {
@@ -241,7 +278,7 @@ export class AIHandSprite extends Sprite {
   }
 
   animate() {
-    for (let card of this.cardGroup.sprites()) {
+    for (const card of this.cardGroup.sprites()) {
       card.animate();
     }
   }

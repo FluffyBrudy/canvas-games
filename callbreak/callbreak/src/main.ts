@@ -54,6 +54,7 @@ async function main() {
     Object.values(UIMenus).forEach((ui) =>
       ui.resize(canvas.width, canvas.height)
     );
+    game.resize();
   };
   resizeCallback();
   window.addEventListener("load", resizeCallback, { once: true });
