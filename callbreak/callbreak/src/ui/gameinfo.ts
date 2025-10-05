@@ -1,4 +1,4 @@
-import { gameStatsStore } from "../store/gamestats.store";
+import type { gameStatsStore } from "../store/gamestats.store";
 
 export class StatsUI {
   container: HTMLDivElement;
@@ -27,33 +27,48 @@ export class StatsUI {
 
     let html = `
     <button id="stats-close" class="stats-close">✖</button>
-    <h3>Round ${store.currentRound + 1}</h3>
+    <h3>🎯 Round ${store.currentRound + 1} Results</h3>
     <table class="stats-table">
       <thead>
         <tr>
           <th>Player</th>
           <th>Bid</th>
-          <th>Completed</th>
-          <th>Round Score</th>
+          <th>Won</th>
+          <th>Score</th>
           <th>Total</th>
         </tr>
       </thead>
       <tbody>
   `;
 
-    for (const player of Object.keys(round.bids)) {
-      const bid = round.bids[player];
-      const completed = round.completedBids[player] ?? 0;
-      const total = totals[player] ?? 0;
-      const isWinner = winner === player;
+    const playerEntries = Object.keys(round.bids)
+      .map((player) => ({
+        player,
+        bid: round.bids[player],
+        completed: round.completedBids[player] ?? 0,
+        total: totals[player] ?? 0,
+        isWinner: winner === player,
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    for (const entry of playerEntries) {
+      const { player, bid, completed, total, isWinner } = entry;
+      const roundScore = completed - bid;
+      const medal = isWinner
+        ? "🥇 "
+        : playerEntries.indexOf(entry) === 1
+        ? "🥈 "
+        : playerEntries.indexOf(entry) === 2
+        ? "🥉 "
+        : "";
 
       html += `
       <tr class="${isWinner ? "leader" : ""}">
-        <td>${player}</td>
+        <td>${medal}${player}</td>
         <td>${bid}</td>
         <td>${completed}</td>
-        <td>${completed - bid}</td>
-        <td>${total.toFixed(1)}</td>
+        <td>${roundScore >= 0 ? "+" : ""}${roundScore}</td>
+        <td><strong>${total.toFixed(1)}</strong></td>
       </tr>
     `;
     }
@@ -61,7 +76,7 @@ export class StatsUI {
     html += `
       </tbody>
     </table>
-    <p><strong>Overall Winner:</strong> ${winner ?? "TBD"}</p>
+    <p>🏆 <strong>Current Leader:</strong> ${winner ?? "TBD"}</p>
   `;
 
     this.container.innerHTML = html;
@@ -73,9 +88,7 @@ export class StatsUI {
         if (store.round.length < store.maxRounds && this.callback) {
           this.callback();
         } else {
-          alert(
-            "All rounds completed. Replay feature not implemented yet — please reload window."
-          );
+          alert("🎉 All rounds completed! Reload the page to play again.");
         }
         this.hide();
       };
