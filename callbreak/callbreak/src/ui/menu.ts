@@ -9,7 +9,7 @@ export class MenuUI {
   constructor(canvasWidth: number, canvasHeight: number, onStart: () => void) {
     const btnRect = new Rect(
       canvasWidth / 2 - 120,
-      canvasHeight / 2 + 40,
+      canvasHeight / 2 + 120,
       240,
       60
     );
@@ -32,7 +32,7 @@ export class MenuUI {
   resize(width: number, height: number) {
     this.startButton.rect = new Rect(
       width / 2 - 120,
-      height / 2 + 40,
+      height / 2 - 240,
       Math.min(240, width / 7),
       Math.max(60, height / 14)
     );
