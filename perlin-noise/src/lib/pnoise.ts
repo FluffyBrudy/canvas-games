@@ -1,9 +1,53 @@
+import { grad1, grad2, lerp } from "../utils/math.utils";
+
 interface TCoor {
   x: number;
   y: number;
 }
 
-const permutation = new Array(512);
+export function perlinNoise(coor: TCoor) {
+  const { x, y } = coor;
+
+  const X = Math.floor(x) & 255;
+  const Y = Math.floor(y) & 255;
+
+  const dx = x - Math.floor(x);
+  const dy = y - Math.floor(y);
+
+  const u = fade(dx);
+  const v = fade(dy);
+
+  const AA = permutation[permutation[X] + Y];
+  const AB = permutation[permutation[X] + Y + 1];
+  const BA = permutation[permutation[X + 1] + Y];
+  const BB = permutation[permutation[X + 1] + Y + 1];
+
+  return lerp(
+    lerp(grad2(AA, dx, dy), grad2(BA, dx - 1, dy), u),
+    lerp(grad2(AB, dx, dy - 1), grad2(BB, dx - 1, dy - 1), u),
+    v
+  );
+}
+
+export function perlinNoise1D(x: number): number {
+  const X = Math.floor(x) & 255;
+  const dx = x - Math.floor(x);
+  const u = fade(dx);
+
+  const A = permutation[X];
+  const B = permutation[X + 1];
+
+  const g0 = grad1(A, dx);
+  const g1 = grad1(B, dx - 1);
+
+  return lerp(g0, g1, u);
+}
+
+function fade(x: number) {
+  return x ** 5 * (x * (x * 6 - 15) + 10);
+}
+
+const permutation = Object.freeze(new Array(512)) as unknown as number[];
 const p = [
   151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140,
   36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234,
@@ -25,70 +69,4 @@ const p = [
 
 for (let i = 0; i < 256; i++) {
   permutation[256 + i] = permutation[i] = p[i];
-}
-
-export function perlinNoise(coor: TCoor) {
-  const { x, y } = coor;
-
-  const X = Math.floor(x) & 255;
-  const Y = Math.floor(y) & 255;
-
-  const dx = x - Math.floor(x);
-  const dy = y - Math.floor(y);
-
-  const u = fade(dx);
-  const v = fade(dy);
-
-  const A = (permutation[X] + Y) & 255;
-  const B = (permutation[X + 1] + Y) & 255;
-  const AA = permutation[A];
-  const BA = permutation[A + 1];
-  const AB = permutation[B];
-  const BB = permutation[B + 1];
-
-  return lerp(
-    lerp(grad(AA, dx, dy), grad(BA, dx - 1, dy), u),
-    lerp(grad(AB, dx, dy - 1), grad(BB, dx - 1, dy - 1), u),
-    v
-  );
-}
-
-export function perlinNoise1D(x: number): number {
-  const X = Math.floor(x) & 255;
-  const dx = x - Math.floor(x);
-  const u = fade(dx);
-
-  const A = permutation[X];
-  const B = permutation[X + 1];
-
-  const g0 = grad1D(A, dx);
-  const g1 = grad1D(B, dx - 1);
-
-  return lerp(g0, g1, u);
-}
-
-function fade(x: number) {
-  return x ** 5 * (x * (x * 6 - 15) + 10);
-}
-
-function lerp(a: number, b: number, t: number) {
-  return a + t * (b - a);
-}
-
-function grad(hash: number, x: number, y: number) {
-  const h = hash & 7;
-  const u = h < 4 ? x : y;
-  const v = h < 4 ? y : x;
-
-  const signU = (h & 1) === 0 ? u : -u;
-  const signV = (h & 2) === 0 ? v : -v;
-
-  return signU + signV;
-}
-
-function grad1D(hash: number, x: number): number {
-  const h = hash & 1;
-  const sign = h === 0 ? 1 : -1;
-
-  return sign * x;
 }
